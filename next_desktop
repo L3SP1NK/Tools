@@ -1,0 +1,9 @@
+#!/bin/bash
+set -euxo pipefail
+
+xdotool set_desktop --relative 1
+
+notification_priority='low'
+notification_timeout='1'
+
+notify-send -u "${notification_priority}" -t "${notification_timeout}" $(( $(xdotool get_desktop) + 1 )) ## Add 1 to desktop number in notification (-> workspace number start at 0)

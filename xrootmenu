@@ -1,0 +1,19 @@
+#!/bin/sh
+
+if ! which jgmenu>/dev/null;then
+    exit 1
+fi
+
+if pidof jgmenu>/dev/null;then
+    kill "$(pidof jgmenu)"
+fi
+
+lockfile="${HOME}/.jgmenu-lockfile"
+if [ -e "${lockfile}" ];then
+    rm "${lockfile}"
+fi
+
+echo ""|\
+        jgmenu\
+            -simple\
+            --at-pointer&

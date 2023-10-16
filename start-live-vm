@@ -1,0 +1,19 @@
+#!/bin/bash
+RC='\e[0m';RED='\e[31m';GREEN='\e[32m';YELLOW='\e[33m'
+ISO="${1}"
+MEM="${2:-1024}"
+REQ='qemu-system-x86_64'
+MEM_AVAIL=$(( $(grep -i MemAvail /proc/meminfo | awk '{print $2}') / 1024 ))
+
+[[ ! ${ISO} || ! -e ${ISO} ]]&&{ echo -e "Start a live VM with qemu.\n\nUsage:./start-live-vm <ISO> <RAM(MB)>";exit 1; }
+[[ ${MEM} -gt ${MEM_AVAIL} ]]&&{ echo -e "${RED}You don't have enough RAM! (${MEM_AVAIL}MB available right now)${RC}";exit 1; }
+
+if ! which ${REQ}>/dev/null;then
+	echo -e "To run me, you need:${RED}${REQ}${RC}"
+	exit 1
+fi
+
+if ! echo -ne "${GREEN}Starting ${ISO}...${RC}"|qemu-system-x86_64 -boot d -cdrom ${ISO} -m ${MEM};then
+	echo -e "${RED}Can't start ${ISO}!${RC}"
+	exit 1
+fi

@@ -1,0 +1,5 @@
+#!/bin/bash
+#IMG_PATH="/usr/share/backgrounds/gnome"
+IMG_PATH="${HOME}/Pictures/Wallpapers/Chrome OS Wallpapers/"
+RANDOM_BG=$(find "${IMG_PATH}" -type f|shuf|head -n1)
+feh --bg-fill "${RANDOM_BG}"

@@ -1,0 +1,98 @@
+#!/bin/bash
+
+SLEEP_INTERVAL='60'
+
+PROCESS_LIST=(\
+
+	"postgres"
+
+	"gvmd"
+	"gsad"
+	"gvmd"
+	"openvas"
+	"ospd-openvas"
+	"notus-scanner"
+	"mosquitto"
+
+	"nessusd"
+
+	"nmap"
+	"tor"
+)
+
+GREEN="\033[32m"
+RED="\033[31m"
+BLUE="\033[34m"
+YELLOW="\033[33m"
+CYAN="\033[36m"
+RESET="\033[0m"
+
+checkRoot() {
+
+    if [[ "${EUID}" -ne 0 ]]; then
+
+        echo -e "${RED}Run me as root!${RESET}"
+        exit 1
+
+    fi
+}
+
+checkPid() {
+
+    for PROCESS in "${PROCESS_LIST[@]}"; do
+
+        PIDS=( $(pgrep "${PROCESS}") )
+
+        if [[ -z "${PIDS[*]}" ]]; then
+
+            echo -e "${RED}-${PROCESS}${RESET}"
+
+        else
+
+            for PID in "${PIDS[@]}"; do
+
+                THREADS=$(ps -p "${PID}" -T | wc -l)
+                STATUS=$(ps -o state= -p "${PID}")
+
+                case "${STATUS}" in
+                    "R")
+                        STATUS_COLOR="${GREEN}${STATUS}${RESET}"
+                        ;;
+                    "S")
+                        STATUS_COLOR="${BLUE}${STATUS}${RESET}"
+                        ;;
+                    "D")
+                        STATUS_COLOR="${YELLOW}${STATUS}${RESET}"
+                        ;;
+                    "Z")
+                        STATUS_COLOR="${CYAN}${STATUS}${RESET}"
+                        ;;
+                    *)
+                        STATUS_COLOR="${RED}${STATUS}${RESET}"
+                        ;;
+                esac
+
+                echo -e " ${GREEN}+ ${RESET}${PROCESS} [${STATUS_COLOR}]	(PID: ${PID}, Threads: ${THREADS})${RESET}"
+
+            done
+
+        fi
+
+    done
+}
+
+main() {
+
+    while true; do
+
+		clear;echo -e "\n $(date)\n\n Updating every: ${SLEEP_INTERVAL}s\n"
+
+        checkRoot
+        checkPid
+
+        sleep "${SLEEP_INTERVAL}";clear
+
+    done
+}
+
+main

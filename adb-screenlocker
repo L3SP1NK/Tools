@@ -1,0 +1,11 @@
+#!/bin/bash
+## Turn Android screen on/off using adb.
+
+set -euxo pipefail
+
+## turn off
+if ! adb shell input keyevent 26; then
+	## turn on
+	adb shell input keyevent 224
+fi
+

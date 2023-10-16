@@ -1,0 +1,10 @@
+#!/bin/bash
+set -euo pipefail
+
+API_TOKEN=$(<${HOME}/.api/hugging-face.txt)
+ENDPOINT='https://api-inference.huggingface.co/models/EleutherAI/gpt-j-6b'
+
+curl "${ENDPOINT}" \
+	-X POST \
+	-d '{"inputs": "Can you please let us know more details about your "}' \
+	-H "Authorization: Bearer ${API_TOKEN}"

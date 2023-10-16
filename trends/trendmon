@@ -1,0 +1,57 @@
+#!/bin/bash
+
+getGtrends() {
+
+	COUNTRY_CODE=${1}
+	GTREND_URL="https://trends.google.com/trends/trendingsearches/daily/rss?geo=${COUNTRY_CODE}"
+
+	echo "${COUNTRY_FLAG} ${COUNTRY_NAME}"
+
+	curl -s "${GTREND_URL}"\
+		| grep -oP '(?<=<title>).*(?=</title>)'\
+		| tail -n +2
+}
+
+COUNTRY_LIST=('FR' 'US' 'ES' 'RU')
+
+for COUNTRY in "${COUNTRY_LIST[@]}"; do
+	case ${COUNTRY} in
+
+		'FR')
+			COUNTRY_FLAG="🇫🇷"; COUNTRY_NAME="France"
+			TOP_LEFT=$(getGtrends "${COUNTRY}")
+			;;
+
+		'US')
+			COUNTRY_FLAG="🇺🇸"; COUNTRY_NAME="USA"
+			TOP_RIGHT=$(getGtrends "${COUNTRY}")
+			;;
+
+		'ES')
+			COUNTRY_FLAG="🇪🇸"; COUNTRY_NAME="Spain"
+			BOTTOM_LEFT=$(getGtrends "${COUNTRY}" | trans -b -t en)
+			;;
+
+		'RU')
+			COUNTRY_FLAG="🇷🇺"; COUNTRY_NAME="Russia"
+			BOTTOM_RIGHT=$(getGtrends "${COUNTRY}" | trans -b -t en)
+			;;
+
+		*)
+			continue
+			;;
+
+	esac
+
+done
+
+
+TOP_LEFT_S=$(gum style --padding "1 8" --border double --border-foreground 4 "${TOP_LEFT}" )
+TOP_RIGHT_S=$(gum style --padding "1 5" --border double --border-foreground 1  "${TOP_RIGHT}" )
+BOTTOM_LEFT_S=$(gum style --padding "1 5" --border double --border-foreground 3 "${BOTTOM_LEFT}" )
+BOTTOM_RIGHT_S=$(gum style --padding "1 4" --border double --border-foreground 12 "${BOTTOM_RIGHT}" )
+
+TOP=$(gum join --horizontal "${TOP_LEFT_S}" "${TOP_RIGHT_S}")
+BOTTOM=$(gum join --horizontal "${BOTTOM_LEFT_S}" "${BOTTOM_RIGHT_S}")
+
+gum join --align center --vertical "${TOP}" "${BOTTOM}"

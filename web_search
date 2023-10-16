@@ -1,0 +1,37 @@
+#!/bin/bash
+## Search for something on the web.
+## Bind this script to a shortcut!
+RED='\e[31m'
+UL='\e[4m'
+BOLD='\e[1m'
+RC='\e[0m'
+
+BROWSER='firefox'
+REQUIREMENTS="${BROWSER}"
+if ! which ${REQUIREMENTS}>/dev/null
+    then
+        echo -e "${RED}To run me, you need: ${REQUIREMENTS}${RC}"
+        exit 1
+fi
+
+SE=(google duckduckgo)
+SE_SEL="${SE[0]}" ## '0' for google '1' for duckduckgo"
+
+## Search keywords will be asked for if not supplied in arg1.
+DMENU_CMD='rofi -dmenu'
+PROMPT="Search on ${SE_SEL}: "
+SEARCH_FOR=$(${DMENU_CMD} -p "${PROMPT}")
+
+if [[ ! ${SEARCH_FOR} ]];then
+        exit 1
+fi
+
+if [[ ${SE_SEL} == 'google' ]];then
+
+        ${BROWSER} "https://www.google.com/search?q=${SEARCH_FOR}"& 2>/dev/null
+
+elif [[ ${SE_SEL} == 'duckduckgo' ]];then
+
+        ${BROWSER} "https://duckduckgo.com/&q=${SEARCH_FOR}"& 2>/dev/null
+
+fi

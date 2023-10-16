@@ -1,0 +1,14 @@
+#!/bin/bash
+set -euxo pipefail
+
+declare -r dmenucmd='rofi -dmenu'
+
+declare trans_input
+trans_input=$(${dmenucmd} -p "To translate: ")
+
+declare -r application_name='Translate'
+declare lang_out='fr'
+declare trans_response
+trans_response=$(echo "${trans_input}" | trans -b -t ${lang_out} || { notify-send -a ${application_name} -u critical -e "No response!"; exit 1; })
+
+notify-send -a "${application_name}" "${trans_response}"

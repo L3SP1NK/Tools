@@ -1,0 +1,54 @@
+#!/bin/bash
+set -euo pipefail
+
+cpu_sensor='k10temp-pci-00c3'
+gpu_sensor='radeon-pci-0100'
+
+temp_usage_cpu=$(\
+	sensors|\
+	grep "${cpu_sensor}" -A2|\
+	grep 'temp1'|\
+	cut -d ':' -f 2|\
+	tr -d '+ '|\
+	cut -d '.' -f 1\
+)
+
+temp_usage_cpu_high=$(\
+	sensors|\
+	grep "${cpu_sensor}" -A2|\
+	grep 'temp1'|\
+	cut -d ':' -f 2|\
+	tr -d '+ '|\
+	cut -d '=' -f 2|\
+	tr -d "°C)"|\
+	cut -d '.' -f 1\
+)
+
+temp_usage_gpu=$(\
+	sensors|\
+	grep "${gpu_sensor}" -A2|\
+	grep 'temp1'|\
+	cut -d ':' -f 2|\
+	tr -d '+ '|\
+	cut -d '.' -f 1\
+)
+
+temp_usage_gpu_hyst=$(\
+	sensors|\
+	grep "${gpu_sensor}" -A2|\
+	grep 'temp1'|\
+	cut -d ':' -f 2|\
+	tr -d '+ '|\
+	cut -d 'C' -f 3|\
+	cut -d '=' -f 2|\
+	tr -d '°'|\
+	cut -d '.' -f 1\
+)
+
+if [[ "${temp_usage_cpu}" -gt "${temp_usage_cpu_high}" || "${temp_usage_gpu}" -gt "${temp_usage_gpu_hyst}" ]]; then
+	warning_logo='🌡'
+	echo -e "${warning_logo}"
+else
+	normal_logo='⛄'
+	echo -e "${normal_logo}"
+fi

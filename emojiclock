@@ -1,0 +1,9 @@
+#!/bin/bash
+clock=(🕐 🕑 🕒 🕓 🕔 🕕 🕖 🕗 🕘 🕙 🕚 🕛)
+current_hour=$(date '+%-I')
+for hour in {0..12};do
+	if [ "${current_hour}" -eq "${hour}" ]; then
+		hourb=$(( "${hour} - 1" )) ## remove 1 since array start at 0
+		echo -n "${clock[${hourb}]}"
+	fi
+done
