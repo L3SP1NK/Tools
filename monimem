@@ -14,7 +14,7 @@ usage_percent=${usage_ratio_num:0:2}
 
 if [ "${usage_percent}" -gt "${warning_percent}" ]; then
 
-	warning_logo='⚠️'
+	warning_logo='⚠warn'
 	echo -e "${warning_logo}"
 
 fi
