@@ -1,0 +1,30 @@
+#!/bin/bash
+
+set -euo pipefail
+
+RED='\e[31m'
+RC='\e[0m'
+
+
+if [[ -z "${@}" ]]; then
+
+	echo -e "\n${RED}No input!${RC}\n"
+	exit 1
+
+fi
+
+HEX_STRINGS=( ${@} )
+
+for HEX_STRING in ${HEX_STRINGS[@]}; do
+
+	if [[ ! ${HEX_STRING} =~ ^[0-9a-fA-F]+$ ]]; then
+
+		echo -e "${RED}\n\n${HEX_STRING} is not a valid hexadecimal string!\n${RC}"
+		exit 1
+
+	fi
+
+	DECIMAL_VALUE=$( printf "%s" $((16#${HEX_STRING})) )
+	echo -n "${DECIMAL_VALUE} "
+
+done
