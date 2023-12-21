@@ -1,0 +1,53 @@
+#!/bin/bash
+
+## Optical Character Recognition.
+
+set -euxo pipefail
+
+SCREENSHOOTER='xfce4-screenshooter'
+SCREENSHOOTER_OUTPUT="/tmp/${RANDOM}"
+SCREENSHOOTER_DELAY='1'
+SCREENSHOOTER_CMD="${SCREENSHOOTER} -r -d ${SCREENSHOOTER_DELAY} -s ${SCREENSHOOTER_OUTPUT}"
+OCR_OUTPUT="/tmp/${RANDOM}"
+
+
+takeScreenshoot(){
+
+	if ! command -v "${SCREENSHOOTER}">/dev/null; then
+
+		echo "${SCREENSHOOTER} not found!"
+		exit 1
+
+	fi
+
+	${SCREENSHOOTER_CMD}
+
+}
+
+takeScreenshoot
+
+
+performOcr() {
+
+	if ! command -v tesseract>/dev/null; then
+
+		echo "Tesseract not found!"
+		exit 1
+
+	fi
+
+
+	tesseract "${SCREENSHOOTER_OUTPUT}" "${OCR_OUTPUT}"
+
+}
+
+performOcr
+
+
+displayResult() {
+
+	notify-send "$( cat ${OCR_OUTPUT}.txt )"
+
+}
+
+displayResult
