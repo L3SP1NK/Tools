@@ -1,68 +1,46 @@
 #!/bin/bash
-
-## Optical Character Recognition.
-
+# Optical Character Recognition.
 set -euxo pipefail
 
-SCREENSHOOTER='xfce4-screenshooter'
-SCREENSHOOTER_OUTPUT="/tmp/${RANDOM}"
-SCREENSHOOTER_DELAY='1'
-SCREENSHOOTER_CMD="${SCREENSHOOTER} -r -d ${SCREENSHOOTER_DELAY} -s ${SCREENSHOOTER_OUTPUT}"
-OCR_OUTPUT="/tmp/${RANDOM}"
+REQUIREMENTS=("tesseract" "xfce4-screenshooter" "xclip")
+COMPOSITOR='picom'
+OCR_OUTPUT="/tmp/ocr_${RANDOM}"
+SCREENSHOOT_OUTFILE="/tmp/screenshot_${RANDOM}"
 
+# Check for required commands
+for REQ in "${REQUIREMENTS[@]}"; do
+  if ! command -v "${REQ}" >/dev/null 2>&1; then
+    echo "${REQ} not found!"
+    exit 1
+  fi
+done
 
-takeScreenshoot(){
+# Check if compositor is running and kill it if necessary
+COMPOSITOR_PID=$(pidof "${COMPOSITOR}")
+if [[ -n ${COMPOSITOR_PID} ]]; then
+  echo "Killing compositor to prevent blur..."
+  kill "${COMPOSITOR_PID}"
+  COMPOSITOR_WAS_RUNNING='0'
+fi
 
-	if ! command -v "${SCREENSHOOTER}">/dev/null; then
+# Take screenshot
+xfce4-screenshooter -r -s "${SCREENSHOOT_OUTFILE}"
 
-		echo "${SCREENSHOOTER} not found!"
-		exit 1
+# Restart compositor if it was running
+[[ "${COMPOSITOR_WAS_RUNNING}" -eq '0' ]] && "${COMPOSITOR}" &
+[[ ! -e "${SCREENSHOOT_OUTFILE}" ]] && exit 1
 
-	fi
+# Perform OCR
+tesseract "${SCREENSHOOT_OUTFILE}" "${OCR_OUTPUT}" || exit 1
 
-	${SCREENSHOOTER_CMD}
+# Read OCR output
+OCR_TEXT=$(<"${OCR_OUTPUT}.txt")
+[[ -z "${OCR_TEXT}" ]] && exit 1
 
-}
+# Show OCR text in notification and copy to clipboard
+APPNAME="${0}"
+notify-send -a "${APPNAME}" "${OCR_TEXT}$(echo -e '\n\n📋 String copied to clipboard!')"
+echo "${OCR_TEXT}" | xclip -selection clipboard
 
-takeScreenshoot || exit 1
-
-
-performOcr() {
-
-	if ! command -v tesseract>/dev/null; then
-
-		echo "Tesseract not found!"
-		exit 1
-
-	fi
-
-	if [[ -e "${SCREENSHOOTER_OUTPUT}" ]]; then
-
-		tesseract "${SCREENSHOOTER_OUTPUT}" "${OCR_OUTPUT}"
-
-	else
-
-		exit 1
-
-	fi
-
-}
-
-performOcr
-
-
-displayResult() {
-
-	if [[ -e "${OCR_OUTPUT}.txt" ]]; then
-
-		notify-send "$( cat ${OCR_OUTPUT}.txt )"
-
-	else
-
-		exit 1
-
-	fi
-
-}
-
-displayResult
+# Cleanup temporary files
+rm -vfr "${SCREENSHOOT_OUTFILE}" "${OCR_OUTPUT}.txt"
