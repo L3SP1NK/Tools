@@ -1,11 +1,10 @@
 #!/bin/bash
 # Optical Character Recognition.
-set -euxo pipefail
 
 REQUIREMENTS=("tesseract" "xfce4-screenshooter" "xclip")
 COMPOSITOR='picom'
 OCR_OUTPUT="/tmp/ocr_${RANDOM}"
-SCREENSHOOT_OUTFILE="/tmp/screenshot_${RANDOM}"
+SCREENSHOT_OUTFILE="/tmp/screenshot_${RANDOM}"
 
 # Check for required commands
 for REQ in "${REQUIREMENTS[@]}"; do
@@ -17,21 +16,21 @@ done
 
 # Check if compositor is running and kill it if necessary
 COMPOSITOR_PID=$(pidof "${COMPOSITOR}")
-if [[ -n ${COMPOSITOR_PID} ]]; then
-  echo "Killing compositor to prevent blur..."
+if [[ -n "${COMPOSITOR_PID}" ]]; then
+  echo "Killing compositor to prevent blur during screenshot..."
   kill "${COMPOSITOR_PID}"
   COMPOSITOR_WAS_RUNNING='0'
 fi
 
 # Take screenshot
-xfce4-screenshooter -r -s "${SCREENSHOOT_OUTFILE}"
+xfce4-screenshooter -r -s "${SCREENSHOT_OUTFILE}"
 
 # Restart compositor if it was running
 [[ "${COMPOSITOR_WAS_RUNNING}" -eq '0' ]] && "${COMPOSITOR}" &
-[[ ! -e "${SCREENSHOOT_OUTFILE}" ]] && exit 1
+[[ ! -e "${SCREENSHOT_OUTFILE}" ]] && exit 1
 
 # Perform OCR
-tesseract "${SCREENSHOOT_OUTFILE}" "${OCR_OUTPUT}" || exit 1
+tesseract "${SCREENSHOT_OUTFILE}" "${OCR_OUTPUT}" || exit 1
 
 # Read OCR output
 OCR_TEXT=$(<"${OCR_OUTPUT}.txt")
@@ -43,4 +42,4 @@ notify-send -a "${APPNAME}" "${OCR_TEXT}$(echo -e '\n\n📋 String copied to cli
 echo "${OCR_TEXT}" | xclip -selection clipboard
 
 # Cleanup temporary files
-rm -vfr "${SCREENSHOOT_OUTFILE}" "${OCR_OUTPUT}.txt"
+rm -vfr "${SCREENSHOT_OUTFILE}" "${OCR_OUTPUT}.txt"
