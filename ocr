@@ -24,7 +24,7 @@ takeScreenshoot(){
 
 }
 
-takeScreenshoot
+takeScreenshoot || exit 1
 
 
 performOcr() {
@@ -36,8 +36,15 @@ performOcr() {
 
 	fi
 
+	if [[ -e "${SCREENSHOOTER_OUTPUT}" ]]; then
 
-	tesseract "${SCREENSHOOTER_OUTPUT}" "${OCR_OUTPUT}"
+		tesseract "${SCREENSHOOTER_OUTPUT}" "${OCR_OUTPUT}"
+
+	else
+
+		exit 1
+
+	fi
 
 }
 
@@ -46,7 +53,15 @@ performOcr
 
 displayResult() {
 
-	notify-send "$( cat ${OCR_OUTPUT}.txt )"
+	if [[ -e "${OCR_OUTPUT}.txt" ]]; then
+
+		notify-send "$( cat ${OCR_OUTPUT}.txt )"
+
+	else
+
+		exit 1
+
+	fi
 
 }
 
