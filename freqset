@@ -1,0 +1,80 @@
+#!/bin/bash
+
+checkReq(){
+
+	REQUIREMENTS=( 'cpufreq-set' 'cpufreq-info' )
+
+	for REQ in ${REQUIREMENTS[@]}; do
+
+		if ! command -v ${REQ}>/dev/null; then
+
+			echo "${REQ} not found!"
+
+		fi
+
+	done
+
+}
+
+checkReq
+
+
+NPROC=$(( $(nproc) - 1 ))
+
+selGov(){
+
+	AVAILABLE_GOVERNOR=( $(cpufreq-info | grep "available cpufreq governors:" | head -n1 | cut -d ":" -f 2 | tr -d " "|sed "s/,/\n/g"))
+
+	echo "Select governor to use:"
+
+	while true; do
+
+		select GOVERNOR in "${AVAILABLE_GOVERNOR[@]}"; do
+
+			[[ -z ${GOVERNOR}  ]] && break
+
+			for CPU in $( seq 0 ${NPROC} ); do
+
+				echo "Setting CPU ${CPU} to use governor ${GOVERNOR}"
+				cpufreq-set -c ${CPU} -g ${GOVERNOR}
+
+			done
+
+			return
+
+		done
+
+	done
+
+}
+
+
+selFreq(){
+
+	AVAILABLE_FREQ=( $(cpufreq-info|grep "available frequency steps:"|head -n1|cut -d ":" -f 2|tr -d ", "|sed "s/Hz/Hz\n/g" ))
+
+	echo "Select frequency to use:"
+
+	while true; do
+
+		select FREQUENCY in "${AVAILABLE_FREQ[@]}"; do
+
+			[[ -z ${FREQUENCY}  ]] && break
+
+			for CPU in $( seq 0 ${NPROC} ); do
+
+				echo "Setting CPU ${CPU} to use FREQUENCY ${FREQUENCY}"
+				cpufreq-set -c ${CPU} -f ${FREQUENCY}
+
+			done
+
+			return
+
+		done
+
+	done
+
+}
+
+selFreq
+selGov
