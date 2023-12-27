@@ -1,0 +1,7 @@
+#!/bin/bash
+
+## Where is the sun?
+
+DATE=$(date '+%Y%m%dT%H%M')
+
+feh -ZxF "https://www.timeanddate.com/scripts/sunmap.php?iso=${DATE}"

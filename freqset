@@ -31,7 +31,7 @@ selGov(){
 
 		select GOVERNOR in "${AVAILABLE_GOVERNOR[@]}"; do
 
-			[[ -z ${GOVERNOR}  ]] && break
+			[[ -z ${GOVERNOR}  ]] && continue
 
 			for CPU in $( seq 0 ${NPROC} ); do
 
@@ -59,7 +59,7 @@ selFreq(){
 
 		select FREQUENCY in "${AVAILABLE_FREQ[@]}"; do
 
-			[[ -z ${FREQUENCY}  ]] && break
+			[[ -z ${FREQUENCY}  ]] && continue
 
 			for CPU in $( seq 0 ${NPROC} ); do
 
