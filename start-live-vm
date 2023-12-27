@@ -1,5 +1,5 @@
 #!/bin/bash
-RC='\e[0m';RED='\e[31m';GREEN='\e[32m';YELLOW='\e[33m'
+RC='\e[0m';RED='\e[31m';GREEN='\e[32m'
 ISO="${1}"
 MEM="${2:-1024}"
 REQ='qemu-system-x86_64'

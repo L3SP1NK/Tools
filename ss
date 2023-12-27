@@ -11,7 +11,7 @@ setScreenSaver() {
 			echo -e "${screensaver}\npress [enter] to view another screensaver"
 			read
 
-			kill $(pidof "${screensaver}")
+			kill "$(pidof ${screensaver})"
 			setScreenSaver
 	done
 }

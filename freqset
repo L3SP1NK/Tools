@@ -4,7 +4,7 @@ checkReq(){
 
 	REQUIREMENTS=( 'cpufreq-set' 'cpufreq-info' )
 
-	for REQ in ${REQUIREMENTS[@]}; do
+	for REQ in "${REQUIREMENTS[@]}"; do
 
 		if ! command -v ${REQ}>/dev/null; then
 

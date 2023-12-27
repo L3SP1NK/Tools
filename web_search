@@ -2,8 +2,6 @@
 ## Search for something on the web.
 ## Bind this script to a shortcut!
 RED='\e[31m'
-UL='\e[4m'
-BOLD='\e[1m'
 RC='\e[0m'
 
 BROWSER='firefox'
@@ -28,10 +26,10 @@ fi
 
 if [[ ${SE_SEL} == 'google' ]];then
 
-        ${BROWSER} "https://www.google.com/search?q=${SEARCH_FOR}"& 2>/dev/null
+        ${BROWSER} "https://www.google.com/search?q=${SEARCH_FOR}"&
 
 elif [[ ${SE_SEL} == 'duckduckgo' ]];then
 
-        ${BROWSER} "https://duckduckgo.com/&q=${SEARCH_FOR}"& 2>/dev/null
+        ${BROWSER} "https://duckduckgo.com/&q=${SEARCH_FOR}"&
 
 fi

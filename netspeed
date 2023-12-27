@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 ## Get the network speed of the desired interface.
 
-INTERFACE="$(ifconfig | head -n 1 | awk {'print $1'} | cut -d ':' -f 1)"
+INTERFACE="$(ifconfig | head -n 1 | awk '{print $1}' | cut -d ':' -f 1)"
 echo -e "${BOLD}${GREY}${INTERFACE}: ${BOLD}${GREEN}$(ethtool "${INTERFACE}" 2>/dev/null | grep Speed | awk '{print $2}')"

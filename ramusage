@@ -3,11 +3,8 @@ RC='\e[0m'
 B='\e[1m'
 UL='\e[4m'
 RED='\e[31m'
-YELLOW='\e[33m'
 GREEN='\e[32m'
-PINK='\e[35m'
 CYAN='\e[36m'
-GREY='\e[37m'
 
 
 REQ=( ps awk grep cut column bc )
@@ -19,13 +16,13 @@ for R in "${REQ[@]}"; do
 done
 
 P_LIST=("${@}")
-if [[ -z "${P_LIST[*]}" ]];then
+if [[ -z ${P_LIST[*]} ]];then
 	echo -e "${RED}Enter a process name!${RC}"
 	exit 1
 fi
 
 checkPid(){
-	for PROCESS in "${P_LIST}";do
+	for PROCESS in "${P_LIST[@]}";do
 		if ! pidof "${PROCESS}" 1>/dev/null;then
 			echo -e "${RED}Process ${UL}${B}${PROCESS}${RC}${RED} not found!${RC}"
 			exit 1
@@ -34,12 +31,12 @@ checkPid(){
 }
 
 memUsage(){
-	for PROCESS in "${P_LIST}";do
+	for PROCESS in "${P_LIST[@]}";do
 		MEM_USAGE_MB=$(ps -ely|grep ${PROCESS}|awk '{SUM += $8/1024} END {print SUM}'|cut -d "." -f1)
 		if [[ ${MEM_USAGE_MB} -gt '0' && ${MEM_USAGE_MB} -lt '1024' ]];then
 			echo -e "   ${UL}${B}${CYAN}${PROCESS}:${RC}${GREEN}	${MEM_USAGE_MB}MB${RC}"
 		else
-			MEM_USAGE_GB=$(printf "%.2f\n" $(bc -l<<<${MEM_USAGE_MB}/1024))
+			MEM_USAGE_GB="$(printf '%.2f\n' "$(bc -l<<<${MEM_USAGE_MB}/1024)")"
 			echo -e "   ${UL}${B}${CYAN}${PROCESS}:${RC}${GREEN}	${MEM_USAGE_GB}GB${RC}"
 		fi
 	done

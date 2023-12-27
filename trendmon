@@ -8,7 +8,7 @@ getTrend(){
 
 	mapfile -t google_trends_results < <( curl -s "${google_trends_url}" | grep -oP '(?<=<title>).*(?=</title>)' | tail -n +2 )
 
-	if [[ ! ${google_trends_results} ]];then
+	if [[ ! "${google_trends_results[*]}" ]];then
 		notify-send -u critical -t 3000 "Can not get the latest trends!"
 		exit 1
 	fi
@@ -37,7 +37,7 @@ selTrend
 
 searchTrend(){
 
-	x-www-browser "https://www.google.com/search?q=${google_trends_selected}"&disown
+	x-www-browser "https://www.google.com/search?q=${google_trends_selected}"&
 	exit 0
 
 }

@@ -7,7 +7,7 @@ removeCache() {
 
 	CACHE_DIRS=( '.cache' '.mozilla' '.config/Binance/Partitions/binance.app/Cache' '.config/molotov/Cache' '.local/share/TelegramDesktop/tdata/temp' )
 
-	for CACHE_DIR in ${CACHE_DIRS[@]}; do
+	for CACHE_DIR in "${CACHE_DIRS[@]}"; do
 
 		CACHE_DIR="${USER_HOME}/${CACHE_DIR}"
 

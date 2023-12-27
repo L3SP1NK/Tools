@@ -1,21 +1,11 @@
 #!/bin/bash
 
-set -euo pipefail
-
 RED='\e[31m'
 RC='\e[0m'
 
+HEX_STRINGS=${1:-$(</dev/stdin)}
 
-if [[ -z "${@}" ]]; then
-
-	echo -e "\n${RED}No input!${RC}\n"
-	exit 1
-
-fi
-
-HEX_STRINGS=( ${@} )
-
-for HEX_STRING in ${HEX_STRINGS[@]}; do
+for HEX_STRING in "${HEX_STRINGS[@]}"; do
 
 	if [[ ! ${HEX_STRING} =~ ^[0-9a-fA-F]+$ ]]; then
 
