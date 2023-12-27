@@ -1,13 +1,5 @@
 #!/usr/bin/env bash
 ## Get the network speed of the desired interface.
 
-## Set colors.
-RC="\e[0m"
-BOLD="\e[1m"
-GREEN="\e[32m"
-RED="\e[31m"
-BLUE="\e[34m"
-GREY="\e[37m"
-
 INTERFACE="$(ifconfig | head -n 1 | awk {'print $1'} | cut -d ':' -f 1)"
 echo -e "${BOLD}${GREY}${INTERFACE}: ${BOLD}${GREEN}$(ethtool "${INTERFACE}" 2>/dev/null | grep Speed | awk '{print $2}')"

@@ -9,5 +9,5 @@ EMOJI=$( ${DMENU} "Search for emoji: " < "${EMOJI_FILE}" | awk '{print $1}')
 echo -n "${EMOJI}" | xclip -selection clipboard
 
 if [[ "${EMOJI}" ]]; then
-	notify-send -u low "${EMOJI} Emoji copied to clipboard"
+	notify-send -u low "${EMOJI} Emoji copied to clipboard!"
 fi
