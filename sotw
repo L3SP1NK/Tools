@@ -1,0 +1,45 @@
+#!/bin/bash
+## Search on the web.
+## Bind this script to a shortcut!
+
+RED='\e[31m' RC='\e[0m'
+
+BROWSER='x-www-browser' DMENU='rofi'
+REQUIREMENTS=( "${BROWSER}" "${DMENU}" )
+
+for REQUIREMENT in "${REQUIREMENTS[@]}"; do
+	if ! command -v "${REQUIREMENT}">/dev/null; then
+		printf "${RED}To run me, you need: ${REQUIREMENT}${RC}"; exit 1
+	fi
+done
+
+SEARCH_ENGINE[1]='google' SEARCH_ENGINE[2]='youtube' #SEARCH_ENGINE[3]='youtube'
+
+searchQuery() {
+
+	[[ "${SEARCH_ENGINE}" == 'youtube' ]] && BROWSER="${BROWSER} --private-window"
+	SEARCH_PROMPT="Search on ${SEARCH_ENGINE^}: "
+	[[ -n "${2}" ]] && SEARCH_QUERY="${2}" || DMENU_CMD='rofi -dmenu' SEARCH_QUERY=$( ${DMENU_CMD} -p "${SEARCH_PROMPT}" )
+	[[ -z "${SEARCH_QUERY}" ]] && exit 1
+	${BROWSER} "${SEARCH_ENGINE_URL}/search?q=${SEARCH_QUERY}"
+
+}
+
+case "${1}" in
+
+	${SEARCH_ENGINE[1]})
+		SEARCH_ENGINE="${SEARCH_ENGINE[1]}" SEARCH_ENGINE_URL='https://www.google.com'
+		searchQuery;;
+
+	${SEARCH_ENGINE[2]})
+		SEARCH_ENGINE="${SEARCH_ENGINE[2]}" SEARCH_ENGINE_URL='https://www.youtube.com'
+		searchQuery;;
+
+#	${SEARCH_ENGINE[3]})
+#		SEARCH_ENGINE="${SEARCH_ENGINE[3]}" SEARCH_ENGINE_URL='https://www.youtube.com'
+#		searchQuery;;
+
+	?|*)
+		printf "${RED}Wrong search engine submitted!\nValid options are: ${SEARCH_ENGINE[*]}${RC}";;
+
+esac
