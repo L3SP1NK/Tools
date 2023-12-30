@@ -20,12 +20,21 @@ SEARCH_QUERY=$( ${DMENU_CMD} -p 'Search: ' )
 
 SEARCH_ENGINE[1]='google'
 SEARCH_ENGINE[2]='youtube'
+SEARCH_ENGINE[3]='github'
 #SEARCH_ENGINE[3]='X'
 
 SEARCH_ON=$(printf "%s\n" "${SEARCH_ENGINE[@]^}"|${DMENU_CMD} -p 'Search on:')
 
 [[ -z "${SEARCH_ON}" ]] &&  exit 1
-[[ ${SEARCH_ON} == 'Youtube' || ${SEARCH_ON} == 'Google' ]] && SEARCH_URL="https://www.${SEARCH_ON}.com/search?q=${SEARCH_QUERY}"
+
+case ${SEARCH_ON} in
+	'Youtube'|'Google'|'Github')
+		SEARCH_URL="https://www.${SEARCH_ON}.com/search?q=${SEARCH_QUERY}";;
+
+	?|*)
+		;;
+esac
+
 [[ "${BROWSER}" == 'firefox' || "${BROWSER}" == 'chromium' ]] && BROWSER_CMD="${BROWSER} --new-window"
 [[ "${SEARCH_ON}" == 'Youtube' && "${BROWSER}" == 'firefox' ]] && BROWSER_CMD="${BROWSER_CMD} --private-window"
 
