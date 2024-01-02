@@ -4,7 +4,7 @@
 
 RED='\e[31m' RC='\e[0m'
 
-BROWSER='chromium' DMENU='rofi'
+BROWSER='firefox' DMENU='rofi'
 REQUIREMENTS=( "${BROWSER}" "${DMENU}" )
 
 for REQUIREMENT in "${REQUIREMENTS[@]}"; do
@@ -23,7 +23,7 @@ SEARCH_ENGINE[2]='youtube'
 SEARCH_ENGINE[3]='github'
 #SEARCH_ENGINE[3]='X'
 
-SEARCH_ON=$(printf "%s\n" "${SEARCH_ENGINE[@]^}"|${DMENU_CMD} -p 'Search on:')
+SEARCH_ON=$(printf "%s\n" "${SEARCH_ENGINE[@]^}"|${DMENU_CMD} -p 'Search on: ')
 
 [[ -z "${SEARCH_ON}" ]] &&  exit 1
 
