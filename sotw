@@ -4,7 +4,7 @@
 
 RED='\e[31m' RC='\e[0m'
 
-BROWSER='firefox' DMENU='rofi'
+BROWSER='chromium' DMENU='rofi'
 REQUIREMENTS=( "${BROWSER}" "${DMENU}" )
 
 for REQUIREMENT in "${REQUIREMENTS[@]}"; do
