@@ -1,0 +1,43 @@
+#!/bin/bash
+
+getTrend(){
+
+	google_trends_country='FR'
+	google_trends_url="https://trends.google.com/trends/trendingsearches/daily/rss?geo=${google_trends_country}"
+
+	mapfile -t google_trends_results < <( curl -s "${google_trends_url}" | grep -oP '(?<=<title>).*(?=</title>)' | tail -n +2 )
+
+	if [[ ! "${google_trends_results[*]}" ]]; then
+
+		echo -e "Can not get the latest trends!"
+		exit 1
+
+	fi
+
+}
+
+printTrend(){
+
+	n='0'
+	for google_trends_result in "${google_trends_results[@]}"; do
+
+		let n++
+		printf '%02d - ' 	"${n}"
+		printf '%s\n'		"${google_trends_result}"
+
+	done
+
+}
+
+main(){
+
+	flag='🇫🇷'
+
+	echo -e "Trends of the day in ${flag}:\n"
+	getTrend
+	printTrend
+
+}
+
+
+main
