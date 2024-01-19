@@ -18,12 +18,13 @@ getTrend(){
 
 printTrend(){
 
-	n='0'
+
+	N=0
 	for google_trends_result in "${google_trends_results[@]}"; do
 
-		let n++
-		printf '%02d - ' 	"${n}"
-		printf '%s\n'		"${google_trends_result}"
+		let N++
+		printf '%02d ' "${N}"
+		echo -e "[${google_trends_result}](https://google.com/search?q=${google_trends_result})\n"
 
 	done
 
@@ -31,9 +32,7 @@ printTrend(){
 
 main(){
 
-	flag='🇫🇷'
 
-	echo -e "Trends of the day in ${flag}:\n"
 	getTrend
 	printTrend
 
