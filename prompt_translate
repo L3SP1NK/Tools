@@ -1,14 +1,24 @@
 #!/bin/bash
 set -euxo pipefail
 
-declare -r dmenucmd='rofi -dmenu'
+application_name='Translate'
 
-declare trans_input
-trans_input=$(${dmenucmd} -p "To translate: ")
+dmenu_cmd='rofi -dmenu'
+trans_input=$(${dmenu_cmd} -p "To translate: ")
 
-declare -r application_name='Translate'
-declare lang_out='fr'
-declare trans_response
-trans_response=$(echo "${trans_input}" | trans -b -t ${lang_out} || { notify-send -a ${application_name} -u critical -e "No response!"; exit 1; })
+text_fr_to_en='🇫🇷 Français → 🇬🇧 English'
+text_en_to_fr='🇬🇧 English → 🇫🇷 Français'
 
-notify-send -a "${application_name}" "${trans_response}"
+lang_select=$(echo -e "${text_fr_to_en}\n${text_en_to_fr}"|${dmenu_cmd} -p 'Translate to:')
+
+if [[ ${lang_select} == ${text_en_to_fr} ]]; then
+	lang_out='fr'
+elif [[ ${lang_select} == ${text_fr_to_en} ]]; then
+	lang_out='en'
+else
+	echo 'Unknown language!'
+fi
+
+
+trans_response=$(echo "${trans_input}" | trans -b -t ${lang_out} || { notify-send -a "${application_name}" -e 'No response!'; exit 1; })
+notify-send -a "${lang_select:0:2} ${application_name}" "${trans_response}"
