@@ -6,8 +6,8 @@ application_name='Translate'
 dmenu_cmd='rofi -dmenu'
 trans_input=$(${dmenu_cmd} -p "To translate: ")
 
-text_fr_to_en='🇫🇷 Français → 🇬🇧 English'
-text_en_to_fr='🇬🇧 English → 🇫🇷 Français'
+text_fr_to_en='auto → 🇬🇧 English'
+text_en_to_fr='auto → 🇫🇷 Français'
 
 lang_select=$(echo -e "${text_fr_to_en}\n${text_en_to_fr}"|${dmenu_cmd} -p 'Translate to:')
 
