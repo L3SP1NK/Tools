@@ -1,0 +1,13 @@
+#!/bin/bash
+
+RED='\e[31m'
+RC='\e[0m'
+
+PASS_MSG=" "
+
+if [[ -z ${*} ]]; then
+	echo -e "${RED}No command supplied!${RC}"
+	exit 1
+fi
+
+echo -n "${PASS_MSG}" && sudo "${1}"
