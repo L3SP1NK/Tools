@@ -6,6 +6,6 @@
 ## And Ctrl+C disconnect the database
 
 trap '' TSTP
-trap '' SIGINT
+#trap '' SIGINT
 
 msfconsole

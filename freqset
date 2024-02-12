@@ -9,6 +9,7 @@ checkReq(){
 		if ! command -v ${REQ}>/dev/null; then
 
 			echo "${REQ} not found!"
+			exit 1
 
 		fi
 
