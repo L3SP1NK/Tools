@@ -4,7 +4,9 @@
 
 RED='\e[31m' RC='\e[0m'
 
-BROWSER='chromium' DMENU='rofi'
+BROWSER='firefox' BROWSER_CMD="${BROWSER} --new-window --private-window"
+DMENU='rofi' DMENU_CMD='rofi -dmenu'
+
 REQUIREMENTS=( "${BROWSER}" "${DMENU}" )
 
 for REQUIREMENT in "${REQUIREMENTS[@]}"; do
@@ -14,28 +16,9 @@ for REQUIREMENT in "${REQUIREMENTS[@]}"; do
 	fi
 done
 
-DMENU_CMD='rofi -dmenu'
 SEARCH_QUERY=$( ${DMENU_CMD} -p 'Search: ' )
 [[ -z ${SEARCH_QUERY} ]] && exit 1
 
-SEARCH_ENGINE[1]='google'
-SEARCH_ENGINE[2]='youtube'
-SEARCH_ENGINE[3]='github'
-#SEARCH_ENGINE[3]='X'
-
-SEARCH_ON=$(printf "%s\n" "${SEARCH_ENGINE[@]^}"|${DMENU_CMD} -p 'Search on: ')
-
-[[ -z "${SEARCH_ON}" ]] &&  exit 1
-
-case ${SEARCH_ON} in
-	'Youtube'|'Google'|'Github')
-		SEARCH_URL="https://www.${SEARCH_ON}.com/search?q=${SEARCH_QUERY}";;
-
-	?|*)
-		;;
-esac
-
-[[ "${BROWSER}" == 'firefox' || "${BROWSER}" == 'chromium' ]] && BROWSER_CMD="${BROWSER} --new-window"
-[[ "${SEARCH_ON}" == 'Youtube' && "${BROWSER}" == 'firefox' ]] && BROWSER_CMD="${BROWSER_CMD} --private-window"
+SEARCH_ENGINE='google' SEARCH_URL="https://www.${SEARCH_ENGINE}.com/search?q=${SEARCH_QUERY}"
 
 ${BROWSER_CMD} "${SEARCH_URL}"&
