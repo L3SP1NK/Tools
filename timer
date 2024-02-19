@@ -3,9 +3,24 @@
 
 
 if [[ -n "${1}" ]]; then
-	input_time="${1}"
+	input_time="${1:-$(</dev/stdin)}"
 else
-	read input_time
+	input_prompt='⌚ Enter time:'
+	if command -v rofi>/dev/null; then
+		input_time=$(rofi -dmenu -p "${input_prompt}")
+		ran_with_rofi='1'
+	else
+		read -p "${input_prompt}" input_time
+	fi
+fi
+
+if [[ ${#input_time} == '3' ]]; then
+	input_time="0${input_time}"
+fi
+
+if [[ ! ${input_time} =~ ^[0-9]+$ || ${input_time} > '2359' ]]; then
+	echo 'invalid time!'
+	exit 1
 fi
 
 input_seconds=$(date -d "$input_time" +%s)
@@ -14,5 +29,7 @@ time_diff=$((input_seconds - current_seconds))
 hours=$((time_diff / 3600))
 minutes=$(( (time_diff % 3600) / 60 ))
 seconds=$((time_diff % 60))
+msg="${input_time} is in ${hours} hour(s), ${minutes} minute(s), and ${seconds} second(s)"
 
-echo "${hours} hour(s), ${minutes} minute(s), and ${seconds} second(s)"
+[[ -n ${ran_with_rofi} ]]&&notify-send "${msg}"||echo "${msg}"
+
