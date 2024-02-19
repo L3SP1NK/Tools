@@ -1,0 +1,18 @@
+#!/bin/bash
+## Calculate remaining time between current time and a specified time.
+
+
+if [[ -n "${1}" ]]; then
+	input_time="${1}"
+else
+	read input_time
+fi
+
+input_seconds=$(date -d "$input_time" +%s)
+current_seconds=$(date +%s)
+time_diff=$((input_seconds - current_seconds))
+hours=$((time_diff / 3600))
+minutes=$(( (time_diff % 3600) / 60 ))
+seconds=$((time_diff % 60))
+
+echo "${hours} hour(s), ${minutes} minute(s), and ${seconds} second(s)"
