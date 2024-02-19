@@ -1,11 +1,11 @@
 #!/bin/bash
-## Calculate remaining time between current time and a specified time.
 
+## Calculate remaining time between current time and a specified time.
 
 if [[ -n "${1}" ]]; then
 	input_time="${1:-$(</dev/stdin)}"
 else
-	input_prompt='⌚ Enter time:'
+	input_prompt='⌚ Enter time (HH:MM):'
 	if command -v rofi>/dev/null; then
 		input_time=$(rofi -dmenu -p "${input_prompt}")
 		ran_with_rofi='1'
@@ -14,22 +14,31 @@ else
 	fi
 fi
 
-if [[ ${#input_time} == '3' ]]; then
-	input_time="0${input_time}"
+# Validate the input time format
+if ! [[ $input_time =~ ^([01]?[0-9]|2[0-3]):([0-5][0-9])$ ]]; then
+    echo "Invalid time format! Please use HH:MM format."
+    exit 1
 fi
 
-if [[ ! ${input_time} =~ ^[0-9]+$ || ${input_time} > '2359' ]]; then
-	echo 'invalid time!'
-	exit 1
-fi
+# Get the input time in seconds since epoch
+input_seconds=$(date -d "today $input_time" +%s)
 
-input_seconds=$(date -d "$input_time" +%s)
+# Get the current time in seconds since epoch
 current_seconds=$(date +%s)
+
+# Adjust input time if it's in the past
+if [[ $input_seconds -lt $current_seconds ]]; then
+    input_seconds=$(date -d "tomorrow $input_time" +%s)
+fi
+
+# Calculate the difference in seconds
 time_diff=$((input_seconds - current_seconds))
+
+# Convert the difference to hours, minutes, and seconds
 hours=$((time_diff / 3600))
 minutes=$(( (time_diff % 3600) / 60 ))
 seconds=$((time_diff % 60))
-msg="${input_time} is in ${hours} hour(s), ${minutes} minute(s), and ${seconds} second(s)"
 
-[[ -n ${ran_with_rofi} ]]&&notify-send "${msg}"||echo "${msg}"
+msg="Remaining time: $hours hour(s), $minutes minute(s), and $seconds second(s)"
 
+[[ -n ${ran_with_rofi} ]] && notify-send "${msg}" || echo "${msg}"
