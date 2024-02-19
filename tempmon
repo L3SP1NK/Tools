@@ -1,3 +1,5 @@
 #!/bin/bash
 #sensors | grep -E '°C' | grep -v '^ ' | awk '{ sum += $2 } END { print sum/NR "°C" }'
-sensors | grep -E '°C' | grep -v '^ ' | awk '{ sum += int($2) } END { print int(sum/NR) "°C" }'
+#sensors | grep -E '°C' | grep -v '^ ' | awk '{ sum += int($2) } END { print int(sum/NR) "°C" }'
+sensors|grep temp1|awk {'print $2'}|tr -d "+"
+
