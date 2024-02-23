@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euxo pipefail
 
-application_name='Translate'
+appname="${0}"
 
 dmenu_cmd='rofi -dmenu'
 trans_input=$(${dmenu_cmd} -p "To translate: ")
@@ -11,14 +11,14 @@ text_en_to_fr='auto → 🇫🇷 Français'
 
 lang_select=$(echo -e "${text_fr_to_en}\n${text_en_to_fr}"|${dmenu_cmd} -p 'Translate to:')
 
-if [[ ${lang_select} == ${text_en_to_fr} ]]; then
+if [[ "${lang_select}" == "${text_en_to_fr}" ]]; then
 	lang_out='fr'
-elif [[ ${lang_select} == ${text_fr_to_en} ]]; then
+elif [[ "${lang_select}" == "${text_fr_to_en}" ]]; then
 	lang_out='en'
 else
 	echo 'Unknown language!'
 fi
 
 
-trans_response=$(echo "${trans_input}" | trans -b -t ${lang_out} || { notify-send -a "${application_name}" -e 'No response!'; exit 1; })
-notify-send -a "${lang_select:0:2} ${application_name}" "${trans_response}"
+trans_response=$(echo "${trans_input}" | trans -b -t "${lang_out}" || { notify-send -a "${appname}" -e 'No response!'; exit 1; })
+notify-send -a "${appname}" "${trans_response}"
