@@ -18,7 +18,8 @@ fi
 
 # Validate the input time format
 if ! [[ $input_time =~ ^([01]?[0-9]|2[0-3]):([0-5][0-9])$ ]]; then
-    echo "Invalid time format! Please use HH:MM format."
+    msg="Invalid time format! Please use HH:MM format."
+	[[ -n ${ran_with_rofi} ]] && notify-send -a "${appname}" "${msg}" || echo "${msg}"
     exit 1
 fi
 

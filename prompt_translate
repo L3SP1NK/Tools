@@ -9,7 +9,7 @@ trans_input=$(${dmenu_cmd} -p "To translate: ")
 text_fr_to_en='auto → 🇬🇧 English'
 text_en_to_fr='auto → 🇫🇷 Français'
 
-lang_select=$(echo -e "${text_fr_to_en}\n${text_en_to_fr}"|${dmenu_cmd} -p 'Translate to:')
+lang_select=$(echo -e "${text_en_to_fr}\n${text_fr_to_en}"|${dmenu_cmd} -p 'Translate to:')
 
 if [[ "${lang_select}" == "${text_en_to_fr}" ]]; then
 	lang_out='fr'

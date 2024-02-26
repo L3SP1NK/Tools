@@ -1,0 +1,4 @@
+#!/bin/bash
+until [ $(date '+%M') == '15' ]; do
+    echo no
+done
