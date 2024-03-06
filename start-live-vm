@@ -2,39 +2,50 @@
 
 RC='\e[0m' WARN='\e[31m' GOOD='\e[32m'
 
-[[ -z "${#}" ]] && { echo -e "${WARN}Usage:\n\n./${0} <disk image>${RC}";exit 1; } || ISO="${1}"
 
-ARCH=$( uname -m ) REQS=( "qemu-system-${ARCH}" )
+printUsage() {
+	echo -e "${WARN}Usage:\n\n.${0} <disk image>${RC}"
+	exit 1
+}
 
-echo -ne "Checking CPU virtualization capability...${RC}"
-if grep -Ewo 'vmx|svm' /proc/cpuinfo>/dev/null; then
-	echo -ne "${GOOD}[OK]${RC}\n"
-else
-	echo -ne "${WARN}[FALSE]${RC}\n"
-fi
+[[ -z "${#}" || ! -e "${1}" ]] && printUsage || ISO="${1}"
 
-echo -ne "Verifying system requirements...${RC}"
 checkReq() {
+
+	ARCH=$( uname -m ) REQS=( "qemu-system-${ARCH}" )
+
 	for REQ in "${REQS[@]}"; do
 		if ! command -v "${REQ}">/dev/null;then
 			echo -e "To run me, you need:${WARN}${REQ}${RC}"
 			exit 1
 		fi
 	done
+
 }
 
+checkFailed() {	echo -ne "${WARN}[FAILED]${RC}\n"; exit 1; }
+checkPassed() {	echo -ne "${GOOD}[OK]${RC}\n"; }
+
+echo -ne "Verifying system requirements...${RC}"
 if checkReq	-wo 'vmx|svm' /proc/cpuinfo; then
-	echo -ne "${GOOD}[OK]\n${RC}"
+	checkPassed
 else
-	echo -ne "${WARN}[FALSE]\n${RC}"
+	checkFailed
+fi
+
+echo -ne "Checking CPU virtualization capability...${RC}"
+if grep -Ewo 'vmx|svm' /proc/cpuinfo>/dev/null; then
+	checkPassed
+else
+	checkFailed
 fi
 
 echo -ne "Computing available RAM...${RC}"
 if AVAIL_MEM=$(( $(grep -i MemAvail /proc/meminfo | awk '{print $2}') / 1024 )); then
-	echo -ne "${GOOD}[OK]${RC}\n"
+	checkPassed
 else
-	echo -ne "${WARN}[FALSE]${RC}\n"
+	checkFailed
 fi
 
 echo -ne "${GOOD}Starting VM...${RC}\n"
-qemu-system-x86_64 -boot d -cdrom "${ISO}" -m "${AVAIL_MEM}" || echo -e "${WARN}Can't start ${ISO}!${RC}"
+qemu-system-x86_64 -boot d -cdrom "${ISO}" -m "${AVAIL_MEM}" && echo -e "${GOOD}Bye!${RC}" || echo -e "${WARN}Can't start ${ISO}!${RC}"
