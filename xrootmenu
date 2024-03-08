@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
-if ! which jgmenu>/dev/null;then
+if ! command -v jgmenu>/dev/null;then
     exit 1
 fi
 
@@ -13,7 +13,4 @@ if [ -e "${lockfile}" ];then
     rm "${lockfile}"
 fi
 
-echo ""|\
-        jgmenu\
-            -simple\
-            --at-pointer&
+jgmenu -simple --at-pointer&
