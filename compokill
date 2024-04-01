@@ -5,15 +5,9 @@ set -euo pipefail
 compositor=picom
 
 if pidof "${compositor}">/dev/null; then
-
-	msg="Compositor is running, stopping it..."
-	printf '%s' "${msg}"&&killall "${compositor}"
-
+	killall "${compositor}"
 else
-
-	msg="Compositor isn't running, starting it..."
-	printf '%s' "${msg}"&&picom&disown
-
+	picom&disown
 fi
 
 xrefresh
