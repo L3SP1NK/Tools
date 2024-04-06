@@ -1,8 +1,12 @@
 #!/bin/bash
+## Get the current Google search trends in a specific country.
 
 getTrend(){
 
-	google_trends_country='FR'
+	#google_trends_country=$( grep 'LANG=' /etc/locale.conf | cut -d '=' -f 2 | cut -d "_" -f 2 | cut -d "." -f 1 )
+
+	google_trends_country=FR
+
 	google_trends_url="https://trends.google.com/trends/trendingsearches/daily/rss?geo=${google_trends_country}"
 
 	mapfile -t google_trends_results < <( curl -s "${google_trends_url}" | grep -oP '(?<=<title>).*(?=</title>)' | tail -n +2 )
@@ -20,10 +24,12 @@ printTrend(){
 
 
 	N=0
+
 	for google_trends_result in "${google_trends_results[@]}"; do
 
 		let N++
-		printf '%02d ' "${N}"
+
+		printf '%02d ' "${N}" ## print 0N instead of N
 		echo -e "[${google_trends_result}](https://google.com/search?q=${google_trends_result})\n"
 
 	done
