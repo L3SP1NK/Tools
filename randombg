@@ -4,7 +4,7 @@ set -euo pipefail
 IMG_PATH="${HOME}/Pictures/Wallpapers"
 FILE_TYPE='.png|.jpg|.jpeg'
 
-RANDOM_BG=$( find "${IMG_PATH}" -type f |grep -E "${FILE_TYPE}"|shuf|head -n1 )
+RANDOM_BG=$( find -L "${IMG_PATH}" | grep -E "${FILE_TYPE}"|shuf|head -n1 )
 
 ##feh --no-xinerama --bg-fill "${RANDOM_BG}" ## span accross multiple screens
 feh --bg-fill "${RANDOM_BG}"

@@ -1,4 +1,7 @@
 #!/bin/bash
-until [ $(date '+%M') == '15' ]; do
-    echo no
-done
+## this file is just a place holder
+
+set -EpeTuxob
+
+echo test
+command -v error&
