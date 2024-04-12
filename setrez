@@ -1,0 +1,24 @@
+#!/bin/bash
+primary_display='HDM1-1' disabled_display='eDP-1'
+
+display_list=( $( xrandr | grep connected | cut -d ' ' -f 1))
+
+resolution_list=( $( xrandr | grep connected -A1 | grep '^ ' | awk '{print $1}' ) )
+
+for display_num in $( seq 0 $(( "${#display_list[@]}" - 1 )) ); do
+
+        xrandr --output "${display_list[${display_num}]}" --mode "${resolution_list[${display_num}]}" --scale 1 --rotation normal
+
+        if [[  "${display_list[${display_num}]}" == "${primary_display}" ]]; then
+
+                xrandr --output "${display_list[${display_num}]}" --primary
+
+        fi
+
+		if [[  "${display_list[${display_num}]}" == "${disabled_display}" ]]; then
+
+                xrandr --output "${display_list[${display_num}]}" --off
+
+        fi
+
+done
