@@ -45,4 +45,7 @@ main(){
 }
 
 
+DATE=$(date '+%A %d %B %Y')
+echo "Google trends for ${DATE}:"
+
 main
