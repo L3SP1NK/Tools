@@ -5,7 +5,7 @@ set -euxo pipefail
 DMENU='rofi -dmenu -i -p'
 EMOJI_FILE="${HOME}/.emoji"
 
-EMOJI=$( ${DMENU} "Search for emoji: " < "${EMOJI_FILE}" | awk '{print $1}')
+EMOJI=$( ${DMENU} "🔎 Search for emoji: " < "${EMOJI_FILE}" | awk '{print $1}')
 echo -n "${EMOJI}" | xclip -selection clipboard
 
 if [[ "${EMOJI}" ]]; then
