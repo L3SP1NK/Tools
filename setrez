@@ -22,3 +22,7 @@ for display_num in $( seq 0 $(( "${#display_list[@]}" - 1 )) ); do
         fi
 
 done
+
+if command -v randombg 1>/dev/null; then
+	randombg
+fi
