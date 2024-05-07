@@ -1,5 +1,17 @@
 #!/bin/bash
-#sensors | grep -E '°C' | grep -v '^ ' | awk '{ sum += $2 } END { print sum/NR "°C" }'
-#sensors | grep -E '°C' | grep -v '^ ' | awk '{ sum += int($2) } END { print int(sum/NR) "°C" }'
-sensors|grep temp1|awk {'print $2'}|tr -d "+"
 
+temp_crit=$( sensors | grep 'crit' | awk '{print $9}' | cut -d '.' -f 1 | sort -u | tac | tr -d '+' | head -n 1 )
+threshold=$(( "${temp_crit}" / 2 ))
+sensor='temp1'
+
+temp=$( sensors | grep "${sensor}" | awk {'print $2'} | tr -d '+' | cut -d '.' -f 1 )
+
+if [ "${temp}" -gt "${threshold}" ]; then
+
+	echo '🌡'
+
+else
+
+	echo -e " "
+
+fi
