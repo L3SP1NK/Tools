@@ -1,17 +1,41 @@
 #!/bin/bash
 
 temp_crit=$( sensors | grep 'crit' | awk '{print $9}' | cut -d '.' -f 1 | sort -u | tac | tr -d '+' | head -n 1 )
-threshold=$(( "${temp_crit}" / 2 ))
+
+temp_high=$(echo "${temp_crit} / 1.5" | bc )
+temp_normal=$(( "${temp_crit}" / 2 ))
+temp_low=$(echo "${temp_crit} / 3" | bc )
+temp_freeze='0'
+
 sensor='temp1'
 
 temp=$( sensors | grep "${sensor}" | awk {'print $2'} | tr -d '+' | cut -d '.' -f 1 )
 
-if [ "${temp}" -gt "${threshold}" ]; then
+# Define the emoji for each temperature range
 
-	echo '🌡'
+emojis=( '🧊' '🥶' '😎' '🥵' '🔥' '?' )
 
-else
+case "${temp}" in
 
-	echo -e " "
+  [0-9]|1[0-9]|20)
+    emoji="${emojis[0]}"
+    ;;
+  [2][1-9]|3[0-9])
+    emoji="${emojis[1]}"
+    ;;
+  [4][0-9]|5[0-9])
+    emoji="${emojis[2]}"
+    ;;
+  [6][0-9]|7[0-9])
+    emoji="${emojis[3]}"
+    ;;
+  [8][0-9]|9[0-9]|100)
+    emoji="${emojis[4]}"
+    ;;
+  *)
+    emoji="${emojis[5]}"
+    ;;
 
-fi
+esac
+
+echo "${emoji}"
