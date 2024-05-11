@@ -41,7 +41,7 @@ checkPid() {
 
     for PROCESS in "${PROCESS_LIST[@]}"; do
 
-        PIDS=( $(pgrep "${PROCESS}") )
+        PIDS=( $(pidof "${PROCESS}") )
 
         if [[ -z "${PIDS[*]}" ]]; then
 

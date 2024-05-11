@@ -2,5 +2,4 @@
 CLOCKS=(🕐 🕑 🕒 🕓 🕔 🕕 🕖 🕗 🕘 🕙 🕚 🕛)
 #CLOCKS=(󱑋 󱑌 󱑍 󱑎 󱑏 󱑐 󱑑 󱑒 󱑓 󱑔 󱑕 󱑖)
 C_TIME=$(date '+%-I')
-C_CLOCK=$((C_TIME - 1))
-printf "%s" "${CLOCKS[$C_CLOCK]}"
+printf "%s" "${CLOCKS[$C_TIME]}"

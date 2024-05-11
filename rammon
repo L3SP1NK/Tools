@@ -1,0 +1,23 @@
+#!/bin/bash
+
+total_ram=$(free -m | awk '/Mem:/ {print $2}')
+available_ram=$(free -m | awk '/Mem:/ {print $7}')
+ram_used=$((100 - available_ram * 100 / total_ram))
+
+case $ram_used in
+  [0-2][0-4]|[0-9])
+    echo '🟢'
+    ;;
+  [2-4][0-9])
+    echo '🟡'
+    ;;
+  [5-6][0-6])
+    echo '🟠'
+    ;;
+  [6-7][0-9]|[8-9][0-9]|100)
+    echo '🔴'
+    ;;
+  *)
+	exit 1
+    ;;
+esac

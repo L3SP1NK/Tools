@@ -1,4 +1,5 @@
 #!/bin/bash
+## convert a hexadecimal string
 
 RED='\e[31m'
 RC='\e[0m'

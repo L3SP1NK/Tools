@@ -48,4 +48,6 @@ else
 fi
 
 echo -ne "${GOOD}Starting VM...${RC}\n"
-qemu-system-x86_64 -boot d -cdrom "${ISO}" -m "${AVAIL_MEM}" && echo -e "${GOOD}Bye!${RC}" || echo -e "${WARN}Can't start ${ISO}!${RC}"
+coproc qemu-system-x86_64 -boot d -cdrom "${ISO}" -m "${AVAIL_MEM}"
+sleep 1
+coproc xvncviewer localhost::5900

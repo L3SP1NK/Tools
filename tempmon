@@ -11,8 +11,6 @@ sensor='temp1'
 
 temp=$( sensors | grep "${sensor}" | awk {'print $2'} | tr -d '+' | cut -d '.' -f 1 )
 
-# Define the emoji for each temperature range
-
 emojis=( '🧊' '🥶' '😎' '🥵' '🔥' '?' )
 
 case "${temp}" in
