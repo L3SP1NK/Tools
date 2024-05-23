@@ -1,0 +1,3 @@
+#!/bin/bash
+SOUND_FILE="${HOME}/.sounds/lazer.mp3"
+xkill;mpv --no-video "${SOUND_FILE}"
