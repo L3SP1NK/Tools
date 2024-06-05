@@ -27,7 +27,7 @@ checkFailed() {	echo -ne "${WARN}[FAILED]${RC}\n"; exit 1; }
 checkPassed() {	echo -ne "${GOOD}[OK]${RC}\n"; }
 
 echo -ne "Verifying system requirements...${RC}"
-if checkReq	-wo 'vmx|svm' /proc/cpuinfo; then
+if checkReq; then
 	checkPassed
 else
 	checkFailed
