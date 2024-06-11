@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-IMG_PATH="${HOME}/Pictures/Wallpapers"
+IMG_PATH="/usr/share/backgrounds/gnome/"
 FILE_TYPE='.png|.jpg|.jpeg'
 
 RANDOM_BG=$( find -L "${IMG_PATH}" | grep -E "${FILE_TYPE}"|shuf|head -n1 )
