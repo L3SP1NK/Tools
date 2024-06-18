@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Search on the web.
-## Bind this script to a shortcut!
+## Bind this script to a key combination!
 
 RED='\e[31m' RC='\e[0m'
 
@@ -16,7 +16,7 @@ for REQUIREMENT in "${REQUIREMENTS[@]}"; do
 	fi
 done
 
-SEARCH_QUERY=$( ${DMENU_CMD} -p '🔎 Search: ' )
+SEARCH_QUERY="$( ${DMENU_CMD} -p '🔎 Search: ' )"
 [[ -z ${SEARCH_QUERY} ]] && exit 1
 
 SEARCH_ENGINE='google' SEARCH_URL="https://www.${SEARCH_ENGINE}.com/search?q=${SEARCH_QUERY}"
