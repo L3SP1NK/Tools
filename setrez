@@ -1,4 +1,5 @@
 #!/bin/bash
+
 primary_display='HDM1-1' disabled_display='eDP-1'
 
 display_list=( $( xrandr | grep connected | cut -d ' ' -f 1))

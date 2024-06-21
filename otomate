@@ -82,7 +82,10 @@ searchSubdomain() {
 		echo -e "\n$warn ! ${rc}${rc}No subdomain found on $ul$bold$target$rc!$rc"
 		return 1
 	else
-		echo -e "\n$ok + ${rc}Found $ul$bold${#found_subdomains[@]}$rc subdomain(s) to test!$rc"
+		echo -e "\n$ok + ${rc}$ulFound $bold${#found_subdomains[@]}$rc$ul subdomain(s) to test!$rc:"
+		for found_subdomain in "${found_subdomains[@]}"; do
+			echo -e "$ok + $rc$found_subdomain"
+		done
 	fi
 
 }

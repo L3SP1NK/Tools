@@ -1,4 +1,29 @@
-modprobe zram
-zramctl /dev/zram0 --algorithm zstd --size 4G
-mkswap -U clear /dev/zram0
-swapon --priority 100 /dev/zram0
+#!/bin/bash
+
+set -euo pipefail
+
+
+ZRAM_SIZE='4G'
+ZRAM_FILE='/dev/zram0'
+
+REQUIREMENTS=('modprobe' 'lsmod' 'swapon' 'mkswap' 'zramctl' )
+
+for REQUIREMENT in ${REQUIREMENTS[@]}; do
+	if ! command -v $REQUIREMENT>/dev/null; then
+		echo "$REQUIREMENT not installed on this system!"
+		exit 1
+	fi
+fi
+
+if swapon -s>/dev/null; then
+	echo "Swap partition already present!"
+	exit 1
+fi
+
+if ! lsmod | grep ^zram; then
+	modprobe zram
+fi
+
+zramctl $ZRAM_FILE --algorithm zstd --size $ZRAM_SIZE
+mkswap -U clear $ZRAM_FILE
+swapon --priority 100 $ZRAM_FILE

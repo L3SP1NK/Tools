@@ -1,7 +1,12 @@
 #!/bin/bash
 
 # Path to the sound file
-SOUND_FILE="/home/lespink/.sounds/startup.mp3"
+SOUND_FILE="/home/$USER/.sounds/startup.mp3"
 
-# Play the sound
-mpv --no-video "${SOUND_FILE}"
+
+[[ ! -e $SOUND_FILE ]] && exit 1
+
+PLAYER='mpv'
+PLAYER_CMD="$PLAYER --no-video"
+
+$PLAYER_CMD "$SOUND_FILE"

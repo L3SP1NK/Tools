@@ -4,7 +4,7 @@
 
 RED='\e[31m' RC='\e[0m'
 
-BROWSER='firefox' BROWSER_CMD="${BROWSER}"
+BROWSER='x-www-browser' BROWSER_CMD="${BROWSER}"
 DMENU='rofi' DMENU_CMD='rofi -dmenu'
 
 REQUIREMENTS=( "${BROWSER}" "${DMENU}" )

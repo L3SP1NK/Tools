@@ -1,38 +1,65 @@
 #!/bin/bash
 
-temp_crit=$( sensors | grep 'crit' | awk '{print $9}' | cut -d '.' -f 1 | sort -u | tac | tr -d '+' | head -n 1 )
+emojis=( '🧊' '🥶' '😎' '🥵' '🔥' '?' )
 
-temp_high=$(echo "${temp_crit} / 1.5" | bc )
-temp_normal=$(( "${temp_crit}" / 2 ))
-temp_low=$(echo "${temp_crit} / 3" | bc )
+temp_crit=$(
+	sensors \
+		| grep 'crit' \
+		| awk '{print $9}' \
+		| cut -d '.' -f 1 \
+		| sort -u \
+		| tac \
+		| tr -d '+' \
+		| head -n 1
+)
+
 temp_freeze='0'
+
+temp_high=$( echo "${temp_crit} / 1.5" | bc )
+temp_normal=$(( "${temp_crit}" / 2 ))
+temp_low=$( echo "${temp_crit} / 3" | bc )
 
 sensor='temp1'
 
-temp=$( sensors | grep "${sensor}" | awk {'print $2'} | tr -d '+' | cut -d '.' -f 1 )
-
-emojis=( '🧊' '🥶' '😎' '🥵' '🔥' '?' )
+temp=$(
+	sensors \
+		| grep "${sensor}" \
+		| awk {'print $2'} \
+		| tr -d '+' \
+		| cut -d '.' -f 1 \
+)
 
 case "${temp}" in
 
-  [0-9]|1[0-9]|20)
-    emoji="${emojis[0]}"
-    ;;
-  [2][1-9]|3[0-9])
-    emoji="${emojis[1]}"
-    ;;
-  [4][0-9]|5[0-9])
-    emoji="${emojis[2]}"
-    ;;
-  [6][0-9]|7[0-9])
-    emoji="${emojis[3]}"
-    ;;
-  [8][0-9]|9[0-9]|100)
-    emoji="${emojis[4]}"
-    ;;
-  *)
-    emoji="${emojis[5]}"
-    ;;
+	## 0 -> 20°C
+	[0-9]|1[0-9]|20)
+		emoji="${emojis[0]}"
+		;;
+
+	## 21 -> 39°C
+	[2][1-9]|3[0-9])
+		emoji="${emojis[1]}"
+		;;
+
+	## 40 -> 59°C
+	[4][0-9]|5[0-9])
+		emoji="${emojis[2]}"
+		;;
+
+	## 60 -> 79°C
+	[6][0-9]|7[0-9])
+		emoji="${emojis[3]}"
+		;;
+
+	## 80 -> 100°C
+	[8][0-9]|9[0-9]|100)
+		emoji="${emojis[4]}"
+		;;
+
+	## unknown °C
+	*)
+		emoji="${emojis[5]}"
+		;;
 
 esac
 

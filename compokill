@@ -4,10 +4,18 @@ set -euo pipefail
 
 compositor=picom
 
-if pidof "${compositor}">/dev/null; then
-	killall "${compositor}"
+if [ -z $XAUTHORITY ]; then
+	exit 1
+fi
+
+if ! pidof Xorg>/dev/null; then
+	exit 1
+fi
+
+if pidof $compositor>/dev/null; then
+	killall $compositor
 else
-	picom&disown
+	$compositor&disown
 fi
 
 xrefresh

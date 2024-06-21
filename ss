@@ -13,7 +13,9 @@ setScreenSaver() {
 
 			kill "$(pidof ${screensaver})"
 			setScreenSaver
+
 	done
+
 }
 
 setScreenSaver

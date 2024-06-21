@@ -4,8 +4,10 @@ RC='\e[0m' WARN='\e[31m' GOOD='\e[32m'
 
 
 printUsage() {
+
 	echo -e "${WARN}Usage:\n\n.${0} <disk image>${RC}"
 	exit 1
+
 }
 
 [[ -z "${#}" || ! -e "${1}" ]] && printUsage || ISO="${1}"

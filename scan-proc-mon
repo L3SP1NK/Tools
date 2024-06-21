@@ -35,6 +35,7 @@ checkRoot() {
         exit 1
 
     fi
+
 }
 
 checkPid() {
