@@ -1,10 +1,13 @@
 #!/bin/bash
+
 ssh_pid=$(sudo pidof sshd)
 
 if [ -n "${ssh_pid}" ]; then
+
 	termux-toast "Killing ssh daemon ${ssh_pid}..."
 	kill ${ssh_pid}
-else
-	termux-toast "Starting SSH daemon..."
-	sshd
+
 fi
+
+termux-toast "Starting SSH daemon..."
+sshd

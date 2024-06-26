@@ -1,0 +1,4 @@
+#!/bin/bash
+set -euo pipefail
+network_lo=$(sudo ip -4 -br a|tac|head -n1|awk '{print $3}')
+nmap --script=vuln -Pn -sV -T5 -A -vvv -dd "$network_lo"
