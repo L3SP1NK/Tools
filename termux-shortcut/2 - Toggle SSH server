@@ -5,7 +5,7 @@ ssh_pid=$(sudo pidof sshd)
 if [ -n "${ssh_pid}" ]; then
 
 	termux-toast "Killing ssh daemon ${ssh_pid}..."
-	kill ${ssh_pid}
+	killall ${ssh_pid}
 
 fi
 
