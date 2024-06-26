@@ -1,9 +1,12 @@
 #!/bin/bash
+print(){ coproc termux-toast }
 
 ssh_pid=$(sudo pidof sshd)
 
 if [ -n "${ssh_pid}" ]; then
+	print "Killing ${ssh_pid}"
 	kill ${ssh_pid}
 else
-	sshd
+	print "Starting SSH daemon..."
+	sshd&&print "OK"
 fi
