@@ -1,0 +1,14 @@
+#!/bin/bash
+t_zones=( $( sudo ls /sys/class/thermal/|grep "thermal" ) )
+
+getTemp(){
+
+        for t_zone in $( seq "${#t_zones[@]}" ) ; do
+                temp=$(( $( sudo cat "/sys/class/thermal/thermal_zone${t_zone}/temp" ) / 1000 ))
+                type=$( sudo cat "/sys/class/thermal/thermal_zone${t_zone}/type" )
+                echo -ne "${type:0:3}:\t${temp}°C\n"
+        done
+
+}
+
+getTemp 2>/dev/null
