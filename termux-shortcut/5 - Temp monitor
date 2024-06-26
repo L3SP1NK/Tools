@@ -11,4 +11,15 @@ getTemp(){
 
 }
 
-getTemp 2>/dev/null
+getProc(){
+
+	ps -eo comm,%cpu --sort=-%cpu | head -n 4 | sed "s/COMMAND/PROC:  /g")
+
+}
+
+main(){
+	getTemp
+	getProc
+}
+
+main 2>/dev/null
