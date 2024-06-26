@@ -1,5 +1,4 @@
 #!/bin/bash
-set -euxo pipefail
 
 ssh_pid=($(sudo pidof sshd))
 
