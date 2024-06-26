@@ -1,0 +1,3 @@
+#!/bin/bash
+termux-toast "Opening $SHELL"
+byobu

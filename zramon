@@ -13,12 +13,7 @@ for REQUIREMENT in ${REQUIREMENTS[@]}; do
 		echo "$REQUIREMENT not installed on this system!"
 		exit 1
 	fi
-fi
-
-if swapon -s>/dev/null; then
-	echo "Swap partition already present!"
-	exit 1
-fi
+done
 
 if ! lsmod | grep ^zram; then
 	modprobe zram

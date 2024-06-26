@@ -1,0 +1,30 @@
+#!/bin/bash
+set -euo pipefail
+
+ssh_pid=($(sudo pidof sshd))
+
+killPid(){
+	for pid in ${ssh_pid[@]}; do
+		if sudo kill $pid; then
+			termux-toast "SSH daemon $pid has been stopped."
+		fi
+	done
+}
+
+if [ -n $ssh_pid ]; then
+
+	termux-toast "Stopping SSH server..."
+
+	if killPid; then
+		termux-toast "OK!"
+	fi
+
+else
+
+	termux-toast "Starting SSH server..."
+	if sshd; then
+		termux-toast "OK!"
+	fi
+
+fi
+
