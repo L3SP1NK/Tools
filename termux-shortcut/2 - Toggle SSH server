@@ -1,5 +1,5 @@
 #!/bin/bash
-print(){ coproc termux-toast }
+print(){ coproc termux-toast "${@}" }
 
 ssh_pid=$(sudo pidof sshd)
 
