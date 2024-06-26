@@ -13,7 +13,7 @@ getTemp(){
 
 getProc(){
 
-	ps -eo comm,%cpu --sort=-%cpu | head -n 4 | sed "s/COMMAND/PROC:  /g")
+	ps -eo comm,%cpu --sort=-%cpu | head -n 4 | sed "s/COMMAND/PROC:  /g"
 
 }
 
