@@ -1,0 +1,65 @@
+#!/bin/bash
+set -euxo pipefail
+
+
+
+NIGHT_TIME='22'
+C_HOUR=$(date "+%H")
+
+
+checkRequirements() {
+
+        requirements=( 'redshift' )
+
+        for requirement in "${requirements[@]}"; do
+                if ! command -v "$requirement" > /dev/null; then
+                        echo -e "\n${rc}${rc}$requirement not found!$rc"
+                        exit 1
+                fi
+        done
+
+}
+
+
+setCold(){
+
+	redshift -x
+
+}
+
+setWarm(){
+
+	TEMP='3500'
+
+	redshift -x
+	redshift -O ${TEMP}
+
+}
+
+
+isItNight(){
+
+        if [[ "${C_HOUR}" -ge "${NIGHT_TIME}" ]]; then
+                echo "🌃 It's night time, setting LCD color to warm..."
+				return 1
+        elif [[ "${C_HOUR}" -lt "${NIGHT_TIME}" ]]; then
+                echo "🌇 It's day time, setting LCD color to cold..."
+				return 0
+        else
+                exit 1
+        fi
+
+}
+
+main() {
+
+	checkRequirements
+	if ! isItNight; then
+		setWarm
+	else
+		setCold
+	fi
+
+}
+
+main
