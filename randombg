@@ -3,24 +3,26 @@ set -euo pipefail
 
 
 NIGHT_TIME='22'
+DAY_TIME='6'
 C_HOUR=$(date "+%H")
 
 isItNight(){
 
-	if [[ "${C_HOUR}" -ge "${NIGHT_TIME}" ]]; then
-		W_TYPE='\-d'
-		echo "🌃 It's night time, searching for a dark background..."
-	elif [[ "${C_HOUR}" -lt "${NIGHT_TIME}" ]]; then
+	if [[ "${C_HOUR}" -le "${NIGHT_TIME}" && "${C_HOUR}" -gt "${DAY_TIME}" ]]; then
 		W_TYPE='\-l'
 		echo "🌇 It's day time, searching for a light background..."
 	else
-		exit 1
+		W_TYPE='\-d'
+		echo "🌃 It's night time, searching for a dark background..."
 	fi
 
 }
 
 findBackground(){
 
+	C_BACKGROUND=$(cat ~/.fehbg | awk '{print $4}' | tr -d "'\n" )
+
+	IMG_TYPE='.svg|.png|.jpg|.jpeg'
 	IMG_PATH='/usr/share/backgrounds/gnome/'
 
 	if [ ! -d "${IMG_PATH}" ]; then
@@ -28,13 +30,13 @@ findBackground(){
 		exit 1
 	fi
 
-	FILE_TYPE='.svg|.png|.jpg|.jpeg'
 
 	RANDOM_BG=$(
 		find -O3 -L "${IMG_PATH}" \
-			| grep -E "${FILE_TYPE}" \
+			| grep -E "${IMG_TYPE}" \
 			| shuf \
 			| grep "${W_TYPE}" \
+			| grep -v "${C_BACKGROUND}" \
 			| head -n1
 	)
 
