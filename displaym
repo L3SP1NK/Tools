@@ -1,5 +1,4 @@
 #!/bin/bash
 setrez
 randombg
-nightlcd
 xrefresh
