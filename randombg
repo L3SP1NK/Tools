@@ -8,14 +8,8 @@ C_HOUR=$(date "+%H")
 
 isItNight(){
 
-	if [[ "${C_HOUR}" -le "${NIGHT_TIME}" && "${C_HOUR}" -gt "${DAY_TIME}" ]]; then
 		W_TYPE='\-l'
-		echo "🌇 It's day time, searching for a light background..."
-	else
 		W_TYPE='\-d'
-		echo "🌃 It's night time, searching for a dark background..."
-	fi
-
 }
 
 findBackground(){
