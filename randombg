@@ -25,8 +25,8 @@ findBackground(){
 	C_BACKGROUND=$(cat ~/.fehbg | awk '{print $4}' | tr -d "'\n" )
 
 	IMG_TYPE='.svg|.png|.jpg|.jpeg'
-#	IMG_PATH='/usr/share/backgrounds/'
-	IMG_PATH="${HOME}/Pictures/backgrounds/"
+	IMG_PATH='/usr/share/backgrounds/gnome'
+#	IMG_PATH="${HOME}/Pictures/backgrounds/"
 
 	if [ ! -d "${IMG_PATH}" ]; then
 		echo "${IMG_PATH} not found!"

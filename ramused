@@ -34,7 +34,8 @@ main() {
 	r_ratio=$(echo "${ram_used} / ${ram_total}"|bc -l)
 	r_usage=$(echo "0$r_ratio * 100"|bc -l)
 
-	printf '%.2f%%' "$r_usage"
+#	printf '%.2f%%' "$r_usage"
+	printf '%.f%%' "$r_usage"
 
 }
 
