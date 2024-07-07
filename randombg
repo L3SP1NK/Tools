@@ -1,6 +1,5 @@
 #!/bin/bash
 set -euo pipefail
-
 C_GPS='54:4.5'
 
 isItNight(){
@@ -16,7 +15,7 @@ isItNight(){
 		elif [[ "${C_PERIOD}" == 'Night' ]]; then
 			W_TYPE='\-d'
 		else
-			exit 1
+			continue
 		fi
 }
 
