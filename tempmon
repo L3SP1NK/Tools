@@ -1,6 +1,7 @@
 #!/bin/bash
 
-emojis=( '🧊' '🥶' '😎' '🥵' '🔥' '?' )
+#icons=( '🧊' '🥶' '😎' '🥵' '🔥' '?' )
+icons=( '' '' '' '' '' )
 
 temp_crit=$(
 	sensors \
@@ -33,34 +34,34 @@ case "${temp}" in
 
 	## 0 -> 20°C
 	[0-9]|1[0-9]|20)
-		emoji="${emojis[0]}"
+		icon="${icons[0]}"
 		;;
 
 	## 21 -> 39°C
 	[2][1-9]|3[0-9])
-		emoji="${emojis[1]}"
+		icon="${icons[1]}"
 		;;
 
 	## 40 -> 59°C
 	[4][0-9]|5[0-9])
-		emoji="${emojis[2]}"
+		icon="${icons[2]}"
 		;;
 
 	## 60 -> 79°C
 	[6][0-9]|7[0-9])
-		emoji="${emojis[3]}"
+		icon="${icons[3]}"
 		;;
 
 	## 80 -> 100°C
 	[8][0-9]|9[0-9]|100)
-		emoji="${emojis[4]}"
+		icon="${icons[4]}"
 		;;
 
 	## unknown °C
 	*)
-		emoji="${emojis[5]}"
+		icon="${icons[5]}"
 		;;
 
 esac
 
-echo "${emoji}"
+echo "${icon}"

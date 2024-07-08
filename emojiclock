@@ -1,9 +1,0 @@
-#!/bin/bash
-
-CLOCKS=(🕐 🕑 🕒 🕓 🕔 🕕 🕖 🕗 🕘 🕙 🕚 🕛)
-#CLOCKS=(󱑋 󱑌 󱑍 󱑎 󱑏 󱑐 󱑑 󱑒 󱑓 󱑔 󱑕 󱑖)
-
-C_TIME=$(date '+%-I')
-C_TIME=$(( C_TIME - 1 ))
-
-printf '%s' "${CLOCKS[$C_TIME]}"
