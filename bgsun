@@ -1,0 +1,3 @@
+#!/bin/bash
+DATE=$(date +%Y%m%dT%H%M)
+feh --bg-scale -ZxF "https://www.timeanddate.com/scripts/sunmap.php?iso=${DATE}"
