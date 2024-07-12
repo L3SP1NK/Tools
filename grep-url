@@ -1,0 +1,25 @@
+#!/bin/bash
+## Grep for URL(s) in a given file/stdin
+
+#REGEX='^(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
+REGEX='[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
+
+if [[ -n "${@}" ]]; then
+
+	INPUT=( "${@}" )
+
+	for FILE in ${INPUT[@]}; do
+		if [ ! -e $FILE ]; then
+			echo "$FILE not found!"
+			exit 1
+		fi
+	done
+
+	grep -aEo "${REGEX}" "${INPUT}" | sort -nu
+
+else
+
+	INPUT='/dev/stdin'
+	cat "${INPUT}" | grep -aEo "${REGEX}" | sort -nu
+
+fi

@@ -1,9 +1,23 @@
 #!/bin/bash
-## Grep for IP in a given file/stdin
-
-INPUT=${1:-$(</dev/stdin)}
+## Grep for IP(s) in a given file/stdin
 
 REGEX='(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
 
-echo "${INPUT}"\
-	|grep -Eo "${REGEX}"
+if [[ -n "${@}" ]]; then
+
+	INPUT=( "${@}" )
+
+	for FILE in ${INPUT[@]}; do
+		if [ ! -e $FILE ]; then
+			echo "$FILE not found!"
+			exit 1
+		fi
+	done
+
+	grep -aEo "${REGEX}" "${INPUT}" | sort -nu
+
+else
+
+	cat /dev/stdin | grep -aEo "${REGEX}" | sort -nu
+
+fi
