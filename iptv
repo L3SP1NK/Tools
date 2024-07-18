@@ -5,6 +5,11 @@ vplayer='mpv'	## vlc/mplayer
 
 playlist_file='/opt/iptv/play.m3u8'
 
+if [[ ! -e $playlist_file || -z $playlist_file ]]; then
+	echo 'playlist not found!'
+	exit 1
+fi
+
 query=$(
 	cat $playlist_file\
 		| grep '^#EXTINF'\
@@ -25,7 +30,8 @@ link=$(
 
 playTv(){
 
-	$vplayer --force-seekable=yes --idle --profile=low-latency "$link" || playTv
+	$vplayer\
+		--force-seekable=yes --idle --profile=low-latency "$link" || playTv
 
 }
 

@@ -4,8 +4,10 @@ if ! command -v jgmenu>/dev/null;then
     exit 1
 fi
 
-if pidof jgmenu>/dev/null;then
-    kill "$(pidof jgmenu)"
+jgpid=$(pidof jgmenu)
+
+if [[ -n $jgpid ]]; then
+    kill $jgpid
 fi
 
 lockfile="${HOME}/.jgmenu-lockfile"
