@@ -1,0 +1,32 @@
+#!/bin/bash
+
+parser='fzf'	## rofi/dmenu
+vplayer='mpv'	## vlc/mplayer
+
+playlist_file='/opt/iptv/play.m3u8'
+
+query=$(
+	cat $playlist_file\
+		| grep '^#EXTINF'\
+		| cut -d '=' -f 2\
+		| tr -d '"'\
+		| sed "s/ tvg-logo//g;s/^,//g"\
+		| sort -u\
+		| $parser\
+	)
+
+link=$(
+	cat $playlist_file\
+		| grep "$query" -A1\
+		| grep http\
+		| sort -u\
+	)
+
+
+playTv(){
+
+	$vplayer --force-seekable=yes --idle --profile=low-latency "$link" || playTv
+
+}
+
+playTv
