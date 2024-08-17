@@ -79,13 +79,13 @@ parse_xrandr_output(){
 	done <<< "$xrandr_output"
 }
 
-cur_display_scaling=$(parse_xrandr_output|grep "$cursor_pos" | cut -d " " -f 2)
-
+cur_display=$cursor_pos
+cur_display_scaling=$(parse_xrandr_output|grep "$cur_display" | cut -d " " -f 2)
 
 set_scale(){
 
-	xrandr --output "$cursor_pos" --scale "$new_scale"
-	notify-send "Scaling: 0$new_scale"
+	xrandr --output "$cur_display" --scale "$new_scale"
+	notify-send "$cur_display scale: x0$new_scale"
 
 }
 
