@@ -11,8 +11,8 @@ xrandr_output=$(xrandr)
 declare -A displays
 while read -r line; do
     if [[ $line == *" connected "* ]]; then
-        display=$(echo $line | awk '{print $1}')
-        resolution=$(echo $line | grep -oP '\d+x\d+\+\d+\+\d+' | head -1)
+        display=$(echo "$line" | awk '{print $1}')
+        resolution=$(echo "$line" | grep -oP '\d+x\d+\+\d+\+\d+' | head -1)
         if [[ -n $resolution ]]; then
             displays[$display]=$resolution
         fi
@@ -51,15 +51,14 @@ calculate_scale_factor() {
     echo "$scale_x x $scale_y"
 }
 
-# Parse xrandr output
-parseOut(){
+parse_xrandr_output(){
 	while read -r line; do
 	    if [[ $line == *" connected "* ]]; then
 	        # Extract display name
-	        display=$(echo $line | awk '{print $1}')
+	        display=$(echo "$line" | awk '{print $1}')
 
 	        # Extract current resolution
-	        current_res=$(echo $line | grep -oP '\d+x\d+\+\d+\+\d+' | grep -oP '^\d+x\d+')
+	        current_res=$(echo "$line" | grep -oP '\d+x\d+\+\d+\+\d+' | grep -oP '^\d+x\d+')
 
 	        # Find the preferred resolution
 	        preferred_res=$(echo "$xrandr_output" | grep -A1 "^$display connected" | grep -oP '\d+x\d+.*\*' | head -1 | grep -oP '^\d+x\d+')
@@ -80,20 +79,27 @@ parseOut(){
 	done <<< "$xrandr_output"
 }
 
-cur_display_scaling=$(parseOut|grep $cursor_pos | cut -d " " -f 2)
+cur_display_scaling=$(parse_xrandr_output|grep "$cursor_pos" | cut -d " " -f 2)
 
+
+set_scale(){
+
+	xrandr --output "$cursor_pos" --scale "$new_scale"
+	notify-send "Scaling: 0$new_scale"
+
+}
 
 increase_scale(){
 
 	new_scale=$(echo "$cur_display_scaling + 0.1" | bc -l)
-	xrandr --output $cursor_pos --scale $new_scale
+	set_scale
 
 }
 
 decrease_scale(){
 
 	new_scale=$(echo "$cur_display_scaling - 0.1" | bc -l)
-	xrandr --output $cursor_pos --scale $new_scale
+	set_scale
 
 }
 
@@ -102,17 +108,14 @@ if [[ ${1} == '+' ]]; then
 
 	decrease_scale ## zoom in
 
-	notify-send "Zooming to 0$new_scale"
 
 elif [[ ${1} == '-' ]]; then
 
 	increase_scale ## zoom out
 
-	notify-send "Zooming to 0$new_scale"
-
 else
 
-	echo $cur_display_scaling
+	echo "$cur_display_scaling"
 
 fi
 
