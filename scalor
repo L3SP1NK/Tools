@@ -1,0 +1,118 @@
+#!/bin/bash
+
+# Get the current mouse location
+mouse_location=$(xdotool getmouselocation --shell)
+eval "$mouse_location"
+
+# Get the xrandr output
+xrandr_output=$(xrandr)
+
+# Parse xrandr output to find connected displays and their resolutions
+declare -A displays
+while read -r line; do
+    if [[ $line == *" connected "* ]]; then
+        display=$(echo $line | awk '{print $1}')
+        resolution=$(echo $line | grep -oP '\d+x\d+\+\d+\+\d+' | head -1)
+        if [[ -n $resolution ]]; then
+            displays[$display]=$resolution
+        fi
+    fi
+done <<< "$xrandr_output"
+
+# Determine which display the mouse is on
+for display in "${!displays[@]}"; do
+    # Extract resolution and position
+    IFS='+' read -r res pos_x pos_y <<< "${displays[$display]}"
+    IFS='x' read -r width height <<< "$res"
+
+    # Check if mouse is within the bounds of this display
+    if (( X >= pos_x && X < pos_x + width && Y >= pos_y && Y < pos_y + height )); then
+        cursor_pos=$display
+    fi
+done
+
+
+# Get the current xrandr output
+xrandr_output=$(xrandr)
+
+# Function to calculate scale factor
+calculate_scale_factor() {
+    local current_res=$1
+    local native_res=$2
+
+    # Split resolution into width and height
+    IFS='x' read -r current_width current_height <<< "$current_res"
+    IFS='x' read -r native_width native_height <<< "$native_res"
+
+    # Calculate scale factors
+    scale_x=$(echo "scale=2; $current_width / $native_width" | bc)
+    scale_y=$(echo "scale=2; $current_height / $native_height" | bc)
+
+    echo "$scale_x x $scale_y"
+}
+
+# Parse xrandr output
+parseOut(){
+	while read -r line; do
+	    if [[ $line == *" connected "* ]]; then
+	        # Extract display name
+	        display=$(echo $line | awk '{print $1}')
+
+	        # Extract current resolution
+	        current_res=$(echo $line | grep -oP '\d+x\d+\+\d+\+\d+' | grep -oP '^\d+x\d+')
+
+	        # Find the preferred resolution
+	        preferred_res=$(echo "$xrandr_output" | grep -A1 "^$display connected" | grep -oP '\d+x\d+.*\*' | head -1 | grep -oP '^\d+x\d+')
+
+	        # Calculate and display scale factor
+	        if [[ -n $current_res && -n $preferred_res ]]; then
+	            scale_factor=$(calculate_scale_factor "$current_res" "$preferred_res")
+
+				if [[ ${scale_factor:0:1} == '.' ]]; then
+					scale_factor="0$scale_factor"
+		        fi
+
+	            echo "$display: $scale_factor"
+			fi
+
+	    fi
+
+	done <<< "$xrandr_output"
+}
+
+cur_display_scaling=$(parseOut|grep $cursor_pos | cut -d " " -f 2)
+
+
+increase_scale(){
+
+	new_scale=$(echo "$cur_display_scaling + 0.1" | bc -l)
+	xrandr --output $cursor_pos --scale $new_scale
+
+}
+
+decrease_scale(){
+
+	new_scale=$(echo "$cur_display_scaling - 0.1" | bc -l)
+	xrandr --output $cursor_pos --scale $new_scale
+
+}
+
+
+if [[ ${1} == '+' ]]; then
+
+	decrease_scale ## zoom in
+
+	notify-send "Zooming to 0$new_scale"
+
+elif [[ ${1} == '-' ]]; then
+
+	increase_scale ## zoom out
+
+	notify-send "Zooming to 0$new_scale"
+
+else
+
+	echo $cur_display_scaling
+
+fi
+
