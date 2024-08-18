@@ -15,7 +15,8 @@ fi
 if pidof $compositor>/dev/null; then
 	killall $compositor
 else
-	$compositor&disown
+	coproc $compositor
+	renice -20 $(pidof $compositor)
 fi
 
 xrefresh
