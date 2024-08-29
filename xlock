@@ -1,0 +1,15 @@
+#!/bin/bash
+
+password=$(zenity --password --title="suspend")
+
+if [ -z $password ]; then
+	exit 1
+fi
+
+
+xscreensaver-command -lock
+
+sleep 1
+
+
+echo $password | sudo -S pm-suspend
