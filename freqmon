@@ -40,7 +40,7 @@ get_color_and_emoji() {
     esac
 }
 
-echo -e " \e[1m\e[4mCPU Frequency:\e[0m\n"
+echo -e " \e[1m\e[4mCPU Frequency:\e[0m"
 
 # Iterate over each CPU
 for core in $(seq 0 $(( $(nproc) - 1 )) ); do
@@ -51,5 +51,21 @@ for core in $(seq 0 $(( $(nproc) - 1 )) ); do
 
 	[[ "${ratio:0:1}" == '.' ]] && ratio="0${ratio}"
 
-	echo -e "${color_and_emoji} CPU $core: $freq_ghz GHz ($ratio)\033[0m"
+	rcore=$(( core + 1 ))
+	cgov=$(cpufreq-info -c $core|grep "The gov"|awk -F'[""]' '{print $2}')
+
+      case $cgov in
+                'schedutil')
+                        gov_icon='⏲';;
+                'performance')
+                        gov_icon='🔌';;
+                'powersave')
+                        gov_icon='🔋';;
+                'ondemand')
+                        gov_icon='🔄';;
+                'conservative')
+                        gov_icon='🐢';;
+        esac
+
+	echo -e "  core $rcore: ${color_and_emoji} $freq_ghz GHz ($ratio) [$gov_icon $cgov]\033[0m"
 done
