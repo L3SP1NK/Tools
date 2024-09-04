@@ -20,19 +20,19 @@ get_color_and_emoji() {
     local ratio=$1
     case 1 in
         $(echo "$ratio > 1.05" | bc -l))	## Using weird ratio value here rather than
-            echo -e "\e[35m󱀚"				## .25, .5, .75, 1 cause it make more sense.
+            echo -e "\e[35m🦄"				## .25, .5, .75, 1 cause it make more sense.
             ;;								## Depends on CPU model, adjust accordingly
         $(echo "$ratio >= 0.95" | bc -l))	## Or divide max_freq by X.
-            echo -e "\e[31m"
+            echo -e "\e[31m🐆"
             ;;
         $(echo "$ratio >= 0.8" | bc -l))
-            echo -e "\e[33m"
+            echo -e "\e[33m🐇"
             ;;
         $(echo "$ratio >= 0.4" | bc -l))
-            echo -e "\e[32m"
+            echo -e "\e[32m🐢"
             ;;
         $(echo "$ratio >= 0.25" | bc -l))
-            echo -e "\e[32m"
+            echo -e "\e[32m🐌"
             ;;
         *)
             echo -e "\e[38m󰂃"
@@ -54,18 +54,19 @@ for core in $(seq 0 $(( $(nproc) - 1 )) ); do
 	rcore=$(( core + 1 ))
 	cgov=$(cpufreq-info -c $core|grep "The gov"|awk -F'[""]' '{print $2}')
 
-      case $cgov in
-                'schedutil')
-                        gov_icon='⏲';;
-                'performance')
-                        gov_icon='🔌';;
-                'powersave')
-                        gov_icon='🔋';;
-                'ondemand')
-                        gov_icon='🔄';;
-                'conservative')
-                        gov_icon='🐢';;
-        esac
-
-	echo -e "  core $rcore: ${color_and_emoji} $freq_ghz GHz ($ratio) [$gov_icon $cgov]\033[0m"
+#      case $cgov in
+#                'schedutil')
+#                        gov_icon='🐀';;
+#                'performance')
+#                        gov_icon='🐆';;
+#                'powersave')
+#                        gov_icon='🐌';;
+#                'ondemand')
+#                        gov_icon='🐇';;
+#                'conservative')
+#                        gov_icon='🐢';;
+#        esac
+#
+#	echo -e "  core $rcore: ${color_and_emoji} $freq_ghz GHz ($ratio) [$gov_icon $cgov]\033[0m"
+	echo -e "  core $rcore: ${color_and_emoji} $freq_ghz GHz ($ratio)\033[0m"
 done
