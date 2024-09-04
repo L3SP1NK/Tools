@@ -14,28 +14,28 @@ get_max_freq() {
 }
 
 max_freq=$(get_max_freq)
-max_freq_ghz=$(echo "scale=2; $max_freq / 1000000" | bc)
+max_freq_ghz=$(echo "scale=1; $max_freq / 1000000" | bc)
 
 get_color_and_emoji() {
     local ratio=$1
     case 1 in
         $(echo "$ratio > 1.05" | bc -l))	## Using weird ratio value here rather than
-            echo -e "\e[35m🦄"				## .25, .5, .75, 1 cause it make more sense.
+            echo -e "\e[1m\e[35m🦄"				## .25, .5, .75, 1 cause it make more sense.
             ;;								## Depends on CPU model, adjust accordingly
         $(echo "$ratio >= 0.95" | bc -l))	## Or divide max_freq by X.
-            echo -e "\e[31m🐆"
+            echo -e "\e[1m\e[31m🐆"
             ;;
         $(echo "$ratio >= 0.8" | bc -l))
-            echo -e "\e[33m🐇"
+            echo -e "\e[1m\e[33m🐇"
             ;;
         $(echo "$ratio >= 0.4" | bc -l))
-            echo -e "\e[32m🐢"
+            echo -e "\e[1m\e[32m🐢"
             ;;
         $(echo "$ratio >= 0.25" | bc -l))
-            echo -e "\e[32m🐌"
+            echo -e "\e[1m\e[37m🐌"
             ;;
         *)
-            echo -e "\e[38m󰂃"
+            echo -e "\e[38m ?"
             ;;
     esac
 }
@@ -46,8 +46,8 @@ echo -e " \e[1m\e[4mCPU Frequency ($cgov):\e[0m"
 # Iterate over each CPU
 for core in $(seq 0 $(( $(nproc) - 1 )) ); do
     freq=$(cat /sys/devices/system/cpu/cpu$core/cpufreq/scaling_cur_freq 2>/dev/null || echo 0)
-    freq_ghz=$(echo "scale=2; $freq / 1000000" | bc)
-    ratio=$(echo "scale=2; $freq / $max_freq" | bc)
+    freq_ghz=$(echo "scale=1; $freq / 1000000" | bc)
+    ratio=$(echo "scale=1; $freq / $max_freq" | bc)
     color_and_emoji=$(get_color_and_emoji $ratio)
 
 	[[ "${ratio:0:1}" == '.' ]] && ratio="0${ratio}"
@@ -68,6 +68,6 @@ for core in $(seq 0 $(( $(nproc) - 1 )) ); do
 #                        gov_icon='🐢';;
 #        esac
 #
-#	echo -e "  core $rcore: ${color_and_emoji} $freq_ghz GHz ($ratio) [$gov_icon $cgov]\033[0m"
-	echo -e "  core $rcore: ${color_and_emoji} $freq_ghz GHz ($ratio)\033[0m"
+#	echo -e "  core $rcore: ${color_and_emoji} $freq_ghz GHz ($ratio) [$gov_icon $cgov]\e[0m"
+	echo -e " • core $rcore: ${color_and_emoji} $freq_ghz GHz ~ \e[3m($ratio)\e[0m"
 done
