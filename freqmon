@@ -20,12 +20,12 @@ get_color_and_emoji() {
     local ratio=$1
     case 1 in
         $(echo "$ratio > 1.05" | bc -l))	## Using weird ratio value here rather than
-            echo -e "\e[1m\e[35m🦄"				## .25, .5, .75, 1 cause it make more sense.
+            echo -e "\e[1m\e[35m🦄"			## .25, .5, .75, 1 cause it make more sense.
             ;;								## Depends on CPU model, adjust accordingly
         $(echo "$ratio >= 0.95" | bc -l))	## Or divide max_freq by X.
             echo -e "\e[1m\e[31m🐆"
             ;;
-        $(echo "$ratio >= 0.8" | bc -l))
+        $(echo "$ratio >= 0.6" | bc -l))
             echo -e "\e[1m\e[33m🐇"
             ;;
         $(echo "$ratio >= 0.4" | bc -l))
