@@ -1,0 +1,54 @@
+#!/bin/bash
+## Select CPU frequency gov on linux using acpi-cpufreq
+
+#cpupower
+#cpufreq-info
+#cpufreq-set
+
+dmenu_cmd='rofi -dmenu'
+
+checkRoot() {
+
+	if [[ ${EUID} -ne '0' ]]; then
+		echo -e "${WARN}Run me as root!${RC}"
+		exit 1
+	fi
+
+}
+
+setFreq(){
+
+	ncpu=$(( $(nproc) - 1 ))
+	gov_banned='userspace'
+	gov_available=( $(cpufreq-info | grep "available cpufreq"|sort -u|cut -d ":" -f 2|tr -d " ") )
+	gov_selected=$( echo "${gov_available[@]}" |tr "," "\n"|grep -v $gov_banned| $dmenu_cmd -p 'select governor:')
+
+	[[ -z $gov_selected ]] && exit 1 || echo $gov_selected
+
+	for cpu in $(seq 0 $ncpu); do
+		cpufreq-set -g $gov_selected -c $cpu
+	done
+
+	case $gov_selected in
+		'schedutil')
+			gov_icon='⏲';;
+		'performance')
+			gov_icon='🔌';;
+		'powersave')
+			gov_icon='🔋';;
+	esac
+
+	notify-send "$gov_icon CPU is now using $gov_selected"
+}
+
+main(){
+
+	if ! checkRoot; then
+		exit 1
+	fi
+
+	setFreq
+
+}
+
+main
