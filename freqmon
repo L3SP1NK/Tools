@@ -40,7 +40,8 @@ get_color_and_emoji() {
     esac
 }
 
-echo -e " \e[1m\e[4mCPU Frequency:\e[0m"
+cgov=$(cpufreq-info |grep "The gov"|awk -F'[""]' '{print $2}'|sort -u)
+echo -e " \e[1m\e[4mCPU Frequency ($cgov):\e[0m"
 
 # Iterate over each CPU
 for core in $(seq 0 $(( $(nproc) - 1 )) ); do
