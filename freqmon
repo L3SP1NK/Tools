@@ -62,13 +62,13 @@ for ((core=0; core<=_core_num; core++)); do
 	_scaled_ratio=$(echo $scaled_ratio | cut -d '.' -f 1)
 
 	case 1 in
-		$((_scaled_ratio > 100)) )
+		$((_scaled_ratio > 101)) )
 			color="\e[35m"; icon="🦄";;
 
-		$((_scaled_ratio >= 80)) )
+		$((_scaled_ratio >= 90)) )
 			color="\e[31m"; icon="🐆";;
 
-		$((_scaled_ratio >= 70)) )
+		$((_scaled_ratio >= 60)) )
 			color="\e[33m"; icon="🐇";;
 
 		$((_scaled_ratio >= 50)) )
@@ -82,7 +82,7 @@ for ((core=0; core<=_core_num; core++)); do
 
 	_core=$(( core + 1  ))
 #	echo -e "$color $scaling_governor_icon core$_core -\e[2m [$scaling_governor]\e[0m$color - $freq_ghz GHz - \e[2m($scaling_ratio)\e[0m"
-	echo -e " » core$_core:$color $freq_ghz GHz \e[2m($scaling_ratio)\e[0m"
+	echo -e " » $icon core$_core:$color $freq_ghz GHz \e[2m($scaling_ratio)\e[0m"
 
 done
 
