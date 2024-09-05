@@ -4,6 +4,7 @@
 
 appname="${0}"
 
+checkInput(){
 if [[ -n "${1}" ]]; then
 	input_time="${1:-$(</dev/stdin)}"
 else
@@ -20,8 +21,12 @@ fi
 if ! [[ $input_time =~ ^([01]?[0-9]|2[0-3]):([0-5][0-9])$ ]]; then
     msg="Invalid time format! Please use HH:MM format."
 	[[ -n ${ran_with_rofi} ]] && notify-send -a "${appname}" "${msg}" || echo "${msg}"
-    exit 1
+    return
 fi
+
+}
+
+checkInput
 
 # Get the input time in seconds since epoch
 input_seconds=$(date -d "today $input_time" +%s)

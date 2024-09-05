@@ -1,73 +1,67 @@
 #!/bin/bash
+## Friendly frequency monitor.
 
-get_max_freq() {
-    local max_freq=0
-    for core in $(seq 0 $(( $(nproc) - 1 )) ); do
-        freq=$(cat /sys/devices/system/cpu/cpu$core/cpufreq/scaling_max_freq 2>/dev/null || echo 0)
-        if (( freq > max_freq )); then
-            max_freq=$freq
-        fi
-    done
-    echo $max_freq
+cpu_name=$(lscpu|grep "Model name"|cut -d ":" -f 2)
+_cpu_name=${cpu_name//  /}
 
+echo -e "\n \e[4m$_cpu_name:\e[0m\n"
 
-}
+core_num=$(nproc)
+_core_num=$((core_num - 1))
 
-max_freq=$(get_max_freq)
-max_freq_ghz=$(echo "scale=1; $max_freq / 1000000" | bc)
+for ((core=0; core<=_core_num; core++)); do
 
-get_color_and_emoji() {
-    local ratio=$1
-    case 1 in
-        $(echo "$ratio > 1.05" | bc -l))	## Using weird ratio value here rather than
-            echo -e "\e[1m\e[35m🦄"			## .25, .5, .75, 1 cause it make more sense.
-            ;;								## Depends on CPU model, adjust accordingly
-        $(echo "$ratio >= 0.95" | bc -l))	## Or divide max_freq by X.
-            echo -e "\e[1m\e[31m🐆"
-            ;;
-        $(echo "$ratio >= 0.6" | bc -l))
-            echo -e "\e[1m\e[33m🐇"
-            ;;
-        $(echo "$ratio >= 0.4" | bc -l))
-            echo -e "\e[1m\e[32m🐢"
-            ;;
-        $(echo "$ratio >= 0.25" | bc -l))
-            echo -e "\e[1m\e[37m🐌"
-            ;;
-        *)
-            echo -e "\e[38m ?"
-            ;;
-    esac
-}
+	cpu_device_path="/sys/devices/system/cpu/cpu$core/cpufreq"
 
-cgov=$(cpufreq-info |grep "The gov"|awk -F'[""]' '{print $2}'|sort -u)
-echo -e " \e[1m\e[4mCPU Frequency ($cgov):\e[0m"
+    scaling_cur_freq=$(cat $cpu_device_path/scaling_cur_freq)
+	scaling_governor=$(cat $cpu_device_path/scaling_governor)
 
-# Iterate over each CPU
-for core in $(seq 0 $(( $(nproc) - 1 )) ); do
-    freq=$(cat /sys/devices/system/cpu/cpu$core/cpufreq/scaling_cur_freq 2>/dev/null || echo 0)
-    freq_ghz=$(echo "scale=1; $freq / 1000000" | bc)
-    ratio=$(echo "scale=1; $freq / $max_freq" | bc)
-    color_and_emoji=$(get_color_and_emoji $ratio)
+	case $scaling_governor in
+		'schedutil')
+			scaling_governor_icon='💡';;
+		'performance')
+			scaling_governor_icon='🔌';;
+		'powersave')
+			scaling_governor_icon='🔋';;
+		'ondemand')
+			scaling_governor_icon='🎚 ';;
+		'conservative')
+			scaling_governor_icon='🎛 ';;
+	esac
 
-	[[ "${ratio:0:1}" == '.' ]] && ratio="0${ratio}"
+	scaling_max_freq=$(cat $cpu_device_path/scaling_max_freq)
 
-	rcore=$(( core + 1 ))
-	cgov=$(cpufreq-info -c $core|grep "The gov"|awk -F'[""]' '{print $2}')
+	bc_scale=2
+    freq_ghz=$(echo "scale=$bc_scale; $scaling_cur_freq / 1000000" | bc)
+    scaling_ratio=$(echo "scale=$bc_scale; $scaling_cur_freq / $scaling_max_freq" | bc)
 
-#      case $cgov in
-#                'schedutil')
-#                        gov_icon='🐀';;
-#                'performance')
-#                        gov_icon='🐆';;
-#                'powersave')
-#                        gov_icon='🐌';;
-#                'ondemand')
-#                        gov_icon='🐇';;
-#                'conservative')
-#                        gov_icon='🐢';;
-#        esac
-#
-#	echo -e "  core $rcore: ${color_and_emoji} $freq_ghz GHz ($ratio) [$gov_icon $cgov]\e[0m"
-	echo -e " • core $rcore: ${color_and_emoji} $freq_ghz GHz ~ \e[3m($ratio)\e[0m"
+	## add leading 0 if <1
+	[[ "${scaling_ratio:0:1}" == '.' ]] && scaling_ratio="0$scaling_ratio"
+
+	# get around bash floating limitation
+	scaled_ratio=$(echo "$scaling_ratio * 100" | bc)
+	_scaled_ratio=$(echo $scaled_ratio | cut -d '.' -f 1)
+
+	case 1 in
+		$((_scaled_ratio > 100)) )
+			color="\e[35m"; icon="🦄";;
+
+		$((_scaled_ratio >= 80)) )
+			color="\e[31m"; icon="🐆";;
+
+		$((_scaled_ratio >= 70)) )
+			color="\e[33m"; icon="🐇";;
+
+		$((_scaled_ratio >= 50)) )
+			color="\e[32m"; icon="🐢";;
+
+		$((_scaled_ratio >= 30)) )
+			color="\e[37m"; icon="🐌";;
+		*)
+			color_icon="\e[38m ?";;
+	esac
+
+	echo -e "$color $scaling_governor_icon core$core -\e[2m [$scaling_governor]\e[0m$color - $freq_ghz GHz - \e[2m($scaling_ratio)\e[0m"
+
 done
+

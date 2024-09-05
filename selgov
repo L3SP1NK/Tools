@@ -17,7 +17,7 @@ setFreq(){
 
 	gov_banned='userspace'
 	gov_available=( $(cpufreq-info | grep "available cpufreq"|sort -u|cut -d ":" -f 2|tr -d " ") )
-	gov_emojis=('⏲ schedutil' '🔌 performance' '🔋 powersave' '🔄 ondemand' '🐢 conservative')
+	gov_emojis=( $(cpufreq-info -g ) )
 	gov_selected=$( printf '%s\n' "${gov_emojis[@]}" | grep -v $gov_banned | $dmenu_cmd -p 'select governor:')
 
 	[[ -z $gov_selected ]] && exit 1
@@ -25,23 +25,13 @@ setFreq(){
 	gov_name=$(echo $gov_selected | cut -d' ' -f2)
 
 	for cpu in $(seq 0 $ncpu); do
-		cpufreq-set -g $gov_name -c $cpu
+		if ! cpufreq-set -g $gov_name -c $cpu; then
+			notify-send "Can't change governor!"
+			exit 1
+		fi
 	done
 
-	case $gov_name in
-		'schedutil')
-			gov_icon='⏲';;
-		'performance')
-			gov_icon='🔌';;
-		'powersave')
-			gov_icon='🔋';;
-		'ondemand')
-			gov_icon='🔄';;
-		'conservative')
-			gov_icon='🐢';;
-	esac
-
-	notify-send "$gov_icon CPU is now using the $gov_name governor."
+	notify-send "CPU is now using the $gov_name governor."
 }
 
 main(){
