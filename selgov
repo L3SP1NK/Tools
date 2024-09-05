@@ -4,7 +4,7 @@
 checkRoot() {
 
 	if [[ ${EUID} -ne '0' ]]; then
-		echo -e "${WARN}Run me as root!${RC}"
+		echo 'Root privileges needed to change governor!'
 		exit 1
 	fi
 

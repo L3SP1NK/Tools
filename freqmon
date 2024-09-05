@@ -1,10 +1,7 @@
 #!/bin/bash
-## Friendly frequency monitor.
 
-cpu_name=$(lscpu|grep "Model name"|cut -d ":" -f 2|sed 's/  //g;s/^ //g'|awk '{print $1,$2}')
-
-## hack for only 1
-cpu_device_path="/sys/devices/system/cpu/cpu*/cpufreq"
+core='*'
+cpu_device_path="/sys/devices/system/cpu/cpu$core/cpufreq"
 scaling_governor=$(cat $cpu_device_path/scaling_governor|sort -u)
 scaling_driver=$(cat $cpu_device_path/scaling_driver|sort -u)
 
@@ -21,33 +18,16 @@ scaling_driver=$(cat $cpu_device_path/scaling_driver|sort -u)
 			scaling_governor_icon='🎛 ';;
 	esac
 
-#echo -e " \e[2m\e[4m$cpu_name\e[0m"
 echo -e "\e[1m $scaling_driver: $scaling_governor$scaling_governor_icon \e[0m"
-
-## end hack
 
 core_num=$(nproc)
 _core_num=$((core_num - 1))
+
 
 for ((core=0; core<=_core_num; core++)); do
 
 	cpu_device_path="/sys/devices/system/cpu/cpu$core/cpufreq"
 	scaling_cur_freq=$(cat $cpu_device_path/scaling_cur_freq)
-#	scaling_governor=$(cat $cpu_device_path/scaling_governor)
-#
-#	case $scaling_governor in
-#		'schedutil')
-#			scaling_governor_icon='💡';;
-#		'performance')
-#			scaling_governor_icon='🔌';;
-#		'powersave')
-#			scaling_governor_icon='🔋';;
-#		'ondemand')
-#			scaling_governor_icon='🎚 ';;
-#		'conservative')
-#			scaling_governor_icon='🎛 ';;
-#	esac
-
 	scaling_max_freq=$(cat $cpu_device_path/scaling_max_freq)
 
 	bc_scale=2
@@ -63,26 +43,24 @@ for ((core=0; core<=_core_num; core++)); do
 
 	case 1 in
 		$((_scaled_ratio > 101)) )
-			color="\e[35m"; icon="🦄";;
+			color='\e[35m'; icon='🦄';;
 
 		$((_scaled_ratio >= 90)) )
-			color="\e[31m"; icon="🐆";;
+			color='\e[31m'; icon='🐆';;
 
-		$((_scaled_ratio >= 60)) )
-			color="\e[33m"; icon="🐇";;
+		$((_scaled_ratio >= 75)) )
+			color='\e[33m'; icon='🐇';;
 
-		$((_scaled_ratio >= 50)) )
-			color="\e[32m"; icon="🐢";;
+		$((_scaled_ratio >= 55)) )
+			color='\e[32m'; icon='🐢';;
 
-		$((_scaled_ratio >= 30)) )
-			color="\e[37m"; icon="🐌";;
+		$((_scaled_ratio >= 39)) )
+			color='\e[37m'; icon='🐌';;
 		*)
-			color_icon="\e[38m ?";;
+			color='\e[38m ?'; icon='?';;
 	esac
 
 	_core=$(( core + 1  ))
-#	echo -e "$color $scaling_governor_icon core$_core -\e[2m [$scaling_governor]\e[0m$color - $freq_ghz GHz - \e[2m($scaling_ratio)\e[0m"
 	echo -e " » $icon core$_core:$color $freq_ghz GHz \e[2m($scaling_ratio)\e[0m"
 
 done
-
