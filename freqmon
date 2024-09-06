@@ -28,10 +28,10 @@ setRatioColorIcon() {
 
     case 1 in
         $((_scaled_ratio > 101)) ) color='\e[35m'; icon='🦄';;
-        $((_scaled_ratio >= 90)) ) color='\e[31m'; icon='🐆';;
-        $((_scaled_ratio >= 75)) ) color='\e[33m'; icon='🐇';;
-        $((_scaled_ratio >= 55)) ) color='\e[32m'; icon='🐢';;
-        $((_scaled_ratio >= 39)) ) color='\e[37m'; icon='🐌';;
+        $((_scaled_ratio >= 80)) ) color='\e[31m'; icon='🐆';;
+        $((_scaled_ratio >= 50)) ) color='\e[33m'; icon='🐇';;
+        $((_scaled_ratio >= 40)) ) color='\e[32m'; icon='🐢';;
+        $((_scaled_ratio >= 30)) ) color='\e[37m'; icon='🐌';;
         *)                         color='\e[38m'; icon='❓';;
     esac
 }
