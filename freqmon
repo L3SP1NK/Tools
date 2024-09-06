@@ -1,8 +1,7 @@
 #!/bin/bash
-#set -euo pipefail
+set -euo pipefail
 
-declare -i floating_point=6
-declare -r cpu_base_path="/sys/devices/system/cpu"
+declare -gri floating_point=6
 
 setGovernorIcon(){
     case $scaling_governor in
@@ -17,8 +16,13 @@ setGovernorIcon(){
 }
 
 showDriverGovernor() {
-	read scaling_governor<$cpu_base_path/cpu0/cpufreq/scaling_governor
-    read scaling_driver<$cpu_base_path/cpu0/cpufreq/scaling_driver
+	## read from cpu0, assuming all core have the same governor.
+	declare -gr cpu_base_path="/sys/devices/system/cpu"
+    declare -r cpu_device_path="$cpu_base_path/cpu0/cpufreq"
+
+    read -r scaling_max_freq<$cpu_device_path/scaling_max_freq
+    read -r scaling_governor<$cpu_device_path/scaling_governor
+    read -r scaling_driver<$cpu_device_path/scaling_driver
 
 	setGovernorIcon
     echo -e "\e[4m\e[1m $scaling_driver: $scaling_governor$scaling_governor_icon \e[0m"
@@ -35,6 +39,7 @@ setRatioColorIcon() {
         $((_scaled_ratio >= 30)) ) color='\e[37m'; icon='🐌';;
         *)                         color='\e[38m'; icon='❓';;
     esac
+
 }
 
 
@@ -45,8 +50,8 @@ showCpuFreq() {
     for ((core=0; core<=_core_num; core++)); do
 
         local cpu_device_path; cpu_device_path="$cpu_base_path/cpu$core/cpufreq"
-        read scaling_cur_freq<$cpu_device_path/scaling_cur_freq
-        read scaling_max_freq<$cpu_device_path/scaling_max_freq
+        read -r scaling_cur_freq<$cpu_device_path/scaling_cur_freq
+        read -r scaling_max_freq<$cpu_device_path/scaling_max_freq
 
         local freq_ghz; freq_ghz=$(bc <<< "scale=$floating_point; $scaling_cur_freq / 1000000")
         local scaling_ratio; scaling_ratio=$(bc <<< "scale=$floating_point; $scaling_cur_freq / $scaling_max_freq")
@@ -56,7 +61,7 @@ showCpuFreq() {
         local scaled_ratio; scaled_ratio=$(bc <<< "$scaling_ratio * 100")
         local _scaled_ratio; _scaled_ratio=$(cut -d '.' -f 1 <<< "$scaled_ratio")
 
-        setRatioColorIcon $_scaled_ratio
+        setRatioColorIcon "$_scaled_ratio"
 
         local _core; _core=$((core + 1))
 		echo -e " » core$_core:$color $freq_ghz GHz \e[2m($scaling_ratio) $icon\e[0m"
