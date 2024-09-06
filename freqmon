@@ -1,66 +1,67 @@
 #!/bin/bash
+set -euo pipefail
 
-core='*'
-cpu_device_path="/sys/devices/system/cpu/cpu$core/cpufreq"
-scaling_governor=$(cat $cpu_device_path/scaling_governor|sort -u)
-scaling_driver=$(cat $cpu_device_path/scaling_driver|sort -u)
+declare -i floating_point=9
+declare -r cpu_base_path="/sys/devices/system/cpu"
 
-	case $scaling_governor in
-		'schedutil')
-			scaling_governor_icon='💡';;
-		'performance')
-			scaling_governor_icon='🔌';;
-		'powersave')
-			scaling_governor_icon='🔋';;
-		'ondemand')
-			scaling_governor_icon='🎚 ';;
-		'conservative')
-			scaling_governor_icon='🎛 ';;
-	esac
+showDriverGovernor() {
+	read scaling_governor<$cpu_base_path/cpu0/cpufreq/scaling_governor
+    read scaling_driver<$cpu_base_path/cpu0/cpufreq/scaling_driver
 
-echo -e "\e[1m $scaling_driver: $scaling_governor$scaling_governor_icon \e[0m"
+    case $scaling_governor in
+        'schedutil')   scaling_governor_icon='💡';;
+        'performance') scaling_governor_icon='🔌';;
+        'powersave')   scaling_governor_icon='🔋';;
+        'ondemand')    scaling_governor_icon='🎚 ';;
+        'conservative')scaling_governor_icon='🎛 ';;
+        *)             scaling_governor_icon='❓';;
+    esac
 
-core_num=$(nproc)
-_core_num=$((core_num - 1))
+    echo -e "\e[1m $scaling_driver: $scaling_governor$scaling_governor_icon \e[0m"
+}
+
+setRatioColorIcon() {
+    local _scaled_ratio=$1
+
+    case 1 in
+        $((_scaled_ratio > 101)) ) color='\e[35m'; icon='🦄';;
+        $((_scaled_ratio >= 90)) ) color='\e[31m'; icon='🐆';;
+        $((_scaled_ratio >= 75)) ) color='\e[33m'; icon='🐇';;
+        $((_scaled_ratio >= 55)) ) color='\e[32m'; icon='🐢';;
+        $((_scaled_ratio >= 39)) ) color='\e[37m'; icon='🐌';;
+        *)                         color='\e[38m'; icon='❓';;
+    esac
+}
 
 
-for ((core=0; core<=_core_num; core++)); do
+showCpuFreq() {
+    local core_num; core_num=$(nproc)
+    local _core_num; _core_num=$((core_num - 1))
 
-	cpu_device_path="/sys/devices/system/cpu/cpu$core/cpufreq"
-	scaling_cur_freq=$(cat $cpu_device_path/scaling_cur_freq)
-	scaling_max_freq=$(cat $cpu_device_path/scaling_max_freq)
+    for ((core=0; core<=_core_num; core++)); do
 
-	bc_scale=2
-    freq_ghz=$(echo "scale=$bc_scale; $scaling_cur_freq / 1000000" | bc)
-    scaling_ratio=$(echo "scale=$bc_scale; $scaling_cur_freq / $scaling_max_freq" | bc)
+        local cpu_device_path; cpu_device_path="$cpu_base_path/cpu$core/cpufreq"
+        read scaling_cur_freq<$cpu_device_path/scaling_cur_freq
+        read scaling_max_freq<$cpu_device_path/scaling_max_freq
 
-	## add leading 0 if <1
-	[[ "${scaling_ratio:0:1}" == '.' ]] && scaling_ratio="0$scaling_ratio"
+        local freq_ghz; freq_ghz=$(bc <<< "scale=$floating_point; $scaling_cur_freq / 1000000")
+        local scaling_ratio; scaling_ratio=$(bc <<< "scale=$floating_point; $scaling_cur_freq / $scaling_max_freq")
 
-	# get around bash floating limitation
-	scaled_ratio=$(echo "$scaling_ratio * 100" | bc)
-	_scaled_ratio=$(echo $scaled_ratio | cut -d '.' -f 1)
+        # Add leading 0 if <1
+        [[ "${scaling_ratio:0:1}" == '.' ]] && scaling_ratio="0$scaling_ratio"
+        local scaled_ratio; scaled_ratio=$(bc <<< "$scaling_ratio * 100")
+        local _scaled_ratio; _scaled_ratio=$(cut -d '.' -f 1 <<< "$scaled_ratio")
 
-	case 1 in
-		$((_scaled_ratio > 101)) )
-			color='\e[35m'; icon='🦄';;
+        setRatioColorIcon $_scaled_ratio
 
-		$((_scaled_ratio >= 90)) )
-			color='\e[31m'; icon='🐆';;
+        local _core; _core=$((core + 1))
+		echo -e " » $icon core$_core:$color $freq_ghz GHz \e[2m($scaling_ratio)\e[0m"
+    done
+}
 
-		$((_scaled_ratio >= 75)) )
-			color='\e[33m'; icon='🐇';;
+main() {
+    showDriverGovernor
+    showCpuFreq
+}
 
-		$((_scaled_ratio >= 55)) )
-			color='\e[32m'; icon='🐢';;
-
-		$((_scaled_ratio >= 39)) )
-			color='\e[37m'; icon='🐌';;
-		*)
-			color='\e[38m ?'; icon='?';;
-	esac
-
-	_core=$(( core + 1  ))
-	echo -e " » $icon core$_core:$color $freq_ghz GHz \e[2m($scaling_ratio)\e[0m"
-
-done
+main
