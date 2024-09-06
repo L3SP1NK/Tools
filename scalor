@@ -10,25 +10,25 @@ xrandr_output=$(xrandr)
 # Parse xrandr output to find connected displays and their resolutions
 declare -A displays
 while read -r line; do
-    if [[ $line == *" connected "* ]]; then
-        display=$(echo "$line" | awk '{print $1}')
-        resolution=$(echo "$line" | grep -oP '\d+x\d+\+\d+\+\d+' | head -1)
-        if [[ -n $resolution ]]; then
-            displays[$display]=$resolution
-        fi
-    fi
+	if [[ $line == *" connected "* ]]; then
+		display=$(echo "$line" | awk '{print $1}')
+		resolution=$(echo "$line" | grep -oP '\d+x\d+\+\d+\+\d+' | head -1)
+		if [[ -n $resolution ]]; then
+			displays[$display]=$resolution
+		fi
+	fi
 done <<< "$xrandr_output"
 
 # Determine which display the mouse is on
 for display in "${!displays[@]}"; do
-    # Extract resolution and position
-    IFS='+' read -r res pos_x pos_y <<< "${displays[$display]}"
-    IFS='x' read -r width height <<< "$res"
+	# Extract resolution and position
+	IFS='+' read -r res pos_x pos_y <<< "${displays[$display]}"
+	IFS='x' read -r width height <<< "$res"
 
-    # Check if mouse is within the bounds of this display
-    if (( X >= pos_x && X < pos_x + width && Y >= pos_y && Y < pos_y + height )); then
-        cursor_pos=$display
-    fi
+	# Check if mouse is within the bounds of this display
+	if (( X >= pos_x && X < pos_x + width && Y >= pos_y && Y < pos_y + height )); then
+		cursor_pos=$display
+	fi
 done
 
 
@@ -37,44 +37,44 @@ xrandr_output=$(xrandr)
 
 # Function to calculate scale factor
 calculate_scale_factor() {
-    local current_res=$1
-    local native_res=$2
+	local current_res=$1
+	local native_res=$2
 
-    # Split resolution into width and height
-    IFS='x' read -r current_width current_height <<< "$current_res"
-    IFS='x' read -r native_width native_height <<< "$native_res"
+	# Split resolution into width and height
+	IFS='x' read -r current_width current_height <<< "$current_res"
+	IFS='x' read -r native_width native_height <<< "$native_res"
 
-    # Calculate scale factors
-    scale_x=$(echo "scale=2; $current_width / $native_width" | bc)
-    scale_y=$(echo "scale=2; $current_height / $native_height" | bc)
+	# Calculate scale factors
+	scale_x=$(echo "scale=2; $current_width / $native_width" | bc)
+	scale_y=$(echo "scale=2; $current_height / $native_height" | bc)
 
-    echo "$scale_x x $scale_y"
+	echo "$scale_x x $scale_y"
 }
 
 parse_xrandr_output(){
 	while read -r line; do
-	    if [[ $line == *" connected "* ]]; then
-	        # Extract display name
-	        display=$(echo "$line" | awk '{print $1}')
+		if [[ $line == *" connected "* ]]; then
+			# Extract display name
+			display=$(echo "$line" | awk '{print $1}')
 
-	        # Extract current resolution
-	        current_res=$(echo "$line" | grep -oP '\d+x\d+\+\d+\+\d+' | grep -oP '^\d+x\d+')
+			# Extract current resolution
+			current_res=$(echo "$line" | grep -oP '\d+x\d+\+\d+\+\d+' | grep -oP '^\d+x\d+')
 
-	        # Find the preferred resolution
-	        preferred_res=$(echo "$xrandr_output" | grep -A1 "^$display connected" | grep -oP '\d+x\d+.*\*' | head -1 | grep -oP '^\d+x\d+')
+			# Find the preferred resolution
+			preferred_res=$(echo "$xrandr_output" | grep -A1 "^$display connected" | grep -oP '\d+x\d+.*\*' | head -1 | grep -oP '^\d+x\d+')
 
-	        # Calculate and display scale factor
-	        if [[ -n $current_res && -n $preferred_res ]]; then
-	            scale_factor=$(calculate_scale_factor "$current_res" "$preferred_res")
+			# Calculate and display scale factor
+			if [[ -n $current_res && -n $preferred_res ]]; then
+				scale_factor=$(calculate_scale_factor "$current_res" "$preferred_res")
 
 				if [[ ${scale_factor:0:1} == '.' ]]; then
 					scale_factor="0$scale_factor"
-		        fi
+				fi
 
-	            echo "$display: $scale_factor"
+				echo "$display: $scale_factor"
 			fi
 
-	    fi
+		fi
 
 	done <<< "$xrandr_output"
 }

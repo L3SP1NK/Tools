@@ -36,7 +36,7 @@ zramOn(){
 	fi
 
 	if ! lsmod | grep ^zram 1>/dev/null; then
-        modprobe zram
+		modprobe zram
 	fi
 
 	mkSwap(){

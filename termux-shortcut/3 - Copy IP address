@@ -1,3 +1,0 @@
-#!/bin/bash
-termux-clipboard-set $(sudo ip -4 -br a|tac|head -n1|awk '{print $3}'|cut -d '/' -f 1)
-termux-toast "IP address copied to clipboard."

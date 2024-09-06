@@ -7,8 +7,8 @@ REQUIREMENTS=( 'tesseract' 'xfce4-screenshooter' 'xclip' 'notify-send' )
 
 for REQ in "${REQUIREMENTS[@]}"; do
   if ! command -v "${REQ}" >/dev/null 2>&1; then
-    echo "${REQ} not found!"
-    exit 1
+	echo "${REQ} not found!"
+	exit 1
   fi
 done
 
