@@ -7,6 +7,7 @@ declare -r cpu_base_path="/sys/devices/system/cpu"
 setGovernorIcon(){
     case $scaling_governor in
         'schedutil')   scaling_governor_icon='💡';;
+        'userspace')   scaling_governor_icon='🍷';;
         'performance') scaling_governor_icon='⛽️';;
         'powersave')   scaling_governor_icon='🌱';;
         'ondemand')    scaling_governor_icon='🎢';;
