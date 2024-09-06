@@ -1,23 +1,26 @@
 #!/bin/bash
-set -euo pipefail
+#set -euo pipefail
 
-declare -i floating_point=9
+declare -i floating_point=6
 declare -r cpu_base_path="/sys/devices/system/cpu"
+
+setGovernorIcon(){
+    case $scaling_governor in
+        'schedutil')   scaling_governor_icon='💡';;
+        'performance') scaling_governor_icon='⛽️';;
+        'powersave')   scaling_governor_icon='🌱';;
+        'ondemand')    scaling_governor_icon='🎢';;
+        'conservative')scaling_governor_icon='🧘';;
+        *)             scaling_governor_icon='❓';;
+    esac
+}
 
 showDriverGovernor() {
 	read scaling_governor<$cpu_base_path/cpu0/cpufreq/scaling_governor
     read scaling_driver<$cpu_base_path/cpu0/cpufreq/scaling_driver
 
-    case $scaling_governor in
-        'schedutil')   scaling_governor_icon='💡';;
-        'performance') scaling_governor_icon='🔌';;
-        'powersave')   scaling_governor_icon='🔋';;
-        'ondemand')    scaling_governor_icon='🎚 ';;
-        'conservative')scaling_governor_icon='🎛 ';;
-        *)             scaling_governor_icon='❓';;
-    esac
-
-    echo -e "\e[1m $scaling_driver: $scaling_governor$scaling_governor_icon \e[0m"
+	setGovernorIcon
+    echo -e "\e[4m\e[1m $scaling_driver: $scaling_governor$scaling_governor_icon \e[0m"
 }
 
 setRatioColorIcon() {
@@ -55,7 +58,7 @@ showCpuFreq() {
         setRatioColorIcon $_scaled_ratio
 
         local _core; _core=$((core + 1))
-		echo -e " » $icon core$_core:$color $freq_ghz GHz \e[2m($scaling_ratio)\e[0m"
+		echo -e " » core$_core:$color $freq_ghz GHz \e[2m($scaling_ratio) $icon\e[0m"
     done
 }
 
