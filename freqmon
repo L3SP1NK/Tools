@@ -3,17 +3,17 @@ set -euo pipefail
 
 declare -gri floating_point=3
 
-setGovernorIcon(){
-	case $scaling_governor in
-		'schedutil')	scaling_governor_icon='💡';;
-		'userspace')	scaling_governor_icon='🍷';;
-		'performance')	scaling_governor_icon='⛽️';;
-		'powersave')	scaling_governor_icon='🌱';;
-		'ondemand')		scaling_governor_icon='🎢';;
-		'conservative')	scaling_governor_icon='🧘';;
-		*)				scaling_governor_icon='❓';;
-	esac
-}
+#setGovernorIcon(){
+#	case $scaling_governor in
+#		'schedutil')	scaling_governor_icon='💡';;
+#		'userspace')	scaling_governor_icon='🍷';;
+#		'performance')	scaling_governor_icon='⛽️';;
+#		'powersave')	scaling_governor_icon='🌱';;
+#		'ondemand')		scaling_governor_icon='🎢';;
+#		'conservative')	scaling_governor_icon='🧘';;
+#		*)				scaling_governor_icon='❓';;
+#	esac
+#}
 
 showDriverGovernor() {
 	## read from cpu0, assuming all core have the same governor.
@@ -24,8 +24,9 @@ showDriverGovernor() {
 	read -r scaling_governor<$cpu_device_path/scaling_governor
 	read -r scaling_driver<$cpu_device_path/scaling_driver
 
-	setGovernorIcon
+#	setGovernorIcon
 #	echo -e " \e[4m\e[1m$scaling_driver\e[0m: $scaling_governor $scaling_governor_icon\e[0m"
+
 	echo -e " \e[4m\e[1m$scaling_driver\e[0m: $scaling_governor\e[0m"
 }
 
@@ -59,14 +60,17 @@ showCpuFreq() {
 
 		# Add leading 0 if <1
 		[[ "${scaling_ratio:0:1}" == '.' ]] && scaling_ratio="0$scaling_ratio"
+
 		local scaled_ratio; scaled_ratio=$(bc <<< "$scaling_ratio * 100")
 		local _scaled_ratio; _scaled_ratio=$(cut -d '.' -f 1 <<< "$scaled_ratio")
 
 		setRatioColorIcon "$_scaled_ratio"
 
 		local _core; _core=$((core + 1))
+
 #		echo -e " » core$_core:$color $freq_ghz GHz \e[2m($scaling_ratio) $icon\e[0m"
 		echo -e " » core$_core:$color $freq_ghz\e[0m GHz \e[2m($scaling_ratio)\e[0m"
+
 	done
 }
 

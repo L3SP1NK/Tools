@@ -1,44 +1,16 @@
 #!/bin/bash
 set -euo pipefail
-C_GPS='54:4.5'
-
-isItNight(){
-
-		C_PERIOD=$(redshift -pl "${C_GPS}" 2>/dev/null \
-			| grep Period \
-			| cut -d ' ' -f 2 \
-		)
-
-
-		if [[ "${C_PERIOD}" == 'Daytime' ]]; then
-			W_TYPE='\-l'
-		elif [[ "${C_PERIOD}" == 'Night' ]]; then
-			W_TYPE='\-d'
-		else
-			continue
-		fi
-}
 
 findBackground(){
 
-	C_BACKGROUND=$(cat ~/.fehbg | awk '{print $4}' | tr -d "'\n" )
-
 	IMG_TYPE='.svg|.png|.jpg|.jpeg'
-	IMG_PATH='/usr/share/backgrounds/gnome'
-#	IMG_PATH="${HOME}/Pictures/backgrounds/"
+#	IMG_PATH='/usr/share/backgrounds/gnome'
+	IMG_PATH="${HOME}/Pictures/backgrounds/"
 
-	if [ ! -d "${IMG_PATH}" ]; then
-		echo "${IMG_PATH} not found!"
-		exit 1
-	fi
-
-
-#			| grep "${W_TYPE}" \
 	RANDOM_BG=$(
 		find -O3 -L "${IMG_PATH}" -maxdepth 1 \
 			| grep -E "${IMG_TYPE}" \
 			| shuf \
-			| grep -v "${C_BACKGROUND}" \
 			| head -n1
 	)
 
@@ -47,22 +19,14 @@ findBackground(){
 
 setBackground(){
 
-	#feh --no-xinerama --bg-fill "${RANDOM_BG}" ## span accross multiple screens
+#	feh --no-xinerama --bg-fill "${RANDOM_BG}" ## span accross multiple screens
 	feh --bg-fill "${RANDOM_BG}"
 
 }
 
 main(){
-
-	if isItNight; then
-		if findBackground; then
-			if setBackground; then
-				exit 0
-			fi
-
-		fi
-	fi
-
+	findBackground
+	setBackground
 }
 
 main
