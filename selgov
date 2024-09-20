@@ -16,22 +16,19 @@ setFreq(){
 	dmenu_cmd='rofi -dmenu'
 
 	gov_banned=( 'placeholder' )
-	gov_available=( $(cpufreq-info | grep "available cpufreq"|sort -u|cut -d ":" -f 2|tr -d " ") )
-	gov_emojis=( $(cpufreq-info -g ) )
-	gov_selected=$( printf '%s\n' "${gov_emojis[@]}" | grep -v $gov_banned[@] | $dmenu_cmd -p 'select governor:')
+	gov_available=( $(cpupower frequency-info | grep "available cpufreq"|sort -u|cut -d ":" -f 2) )
+	gov_emojis=( $(cpupower frequency-info -g ) )
+	gov_selected=$( printf '%s\n' "${gov_available[@]}" | $dmenu_cmd -p 'select governor:')
 
 	[[ -z $gov_selected ]] && exit 1
 
 	gov_name=$(echo $gov_selected | cut -d' ' -f2)
-
-	for cpu in $(seq 0 $ncpu); do
-		if ! cpufreq-set -g $gov_name -c $cpu; then
-			notify-send "Can't change governor!"
-			exit 1
-		fi
-	done
-
-	notify-send "CPU is now using the $gov_name governor."
+	if cpupower frequency-set -g $gov_name; then
+		notify-send "CPU is now using the $gov_name governor."
+	else
+		notify-send "Can't change governor!"
+		exit 1
+	fi
 }
 
 main(){

@@ -1,11 +1,6 @@
 #!/bin/bash
-RC='\e[0m'
-B='\e[1m'
-UL='\e[4m'
-RED='\e[31m'
-GREEN='\e[32m'
-CYAN='\e[36m'
 
+RC='\e[0m' B='\e[1m' UL='\e[4m' RED='\e[31m' GREEN='\e[32m' CYAN='\e[36m'
 
 REQ=( 'ps' 'awk' 'grep' 'cut' 'column' 'bc' )
 
