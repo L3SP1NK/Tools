@@ -4,25 +4,25 @@
 
 appname="${0}"
 
-checkInput(){
-if [[ -n "${1}" ]]; then
-	input_time="${1:-$(</dev/stdin)}"
-else
-	input_prompt='⌚ Enter time (HH:MM):'
-	if command -v rofi>/dev/null; then
-		input_time=$(rofi -dmenu -p "${input_prompt}")
-		ran_with_rofi='1'
+checkInput() {
+	if [[ -n ${1} ]]; then
+		input_time="${1:-$(</dev/stdin)}"
 	else
-		read -p "${input_prompt}" input_time
+		input_prompt='⌚ Enter time (HH:MM):'
+		if command -v rofi >/dev/null; then
+			input_time=$(rofi -dmenu -p "${input_prompt}")
+			ran_with_rofi='1'
+		else
+			read -p "${input_prompt}" input_time
+		fi
 	fi
-fi
 
-# Validate the input time format
-if ! [[ $input_time =~ ^([01]?[0-9]|2[0-3]):([0-5][0-9])$ ]]; then
-	msg="Invalid time format! Please use HH:MM format."
-	[[ -n ${ran_with_rofi} ]] && notify-send -a "${appname}" "${msg}" || echo "${msg}"
-	return
-fi
+	# Validate the input time format
+	if ! [[ $input_time =~ ^([01]?[0-9]|2[0-3]):([0-5][0-9])$ ]]; then
+		msg="Invalid time format! Please use HH:MM format."
+		[[ -n ${ran_with_rofi} ]] && notify-send -a "${appname}" "${msg}" || echo "${msg}"
+		return
+	fi
 
 }
 
@@ -44,7 +44,7 @@ time_diff=$((input_seconds - current_seconds))
 
 # Convert the difference to hours, minutes, and seconds
 hours=$((time_diff / 3600))
-minutes=$(( (time_diff % 3600) / 60 ))
+minutes=$(((time_diff % 3600) / 60))
 seconds=$((time_diff % 60))
 
 msg="Remaining time: $hours hour(s), $minutes minute(s), and $seconds second(s)"

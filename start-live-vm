@@ -2,7 +2,6 @@
 
 RC='\e[0m' WARN='\e[31m' GOOD='\e[32m'
 
-
 printUsage() {
 
 	echo -e "${WARN}Usage:\n\n.${0} <disk image>${RC}"
@@ -10,14 +9,14 @@ printUsage() {
 
 }
 
-[[ -z "${#}" || ! -e "${1}" ]] && printUsage || ISO="${1}"
+[[ -z ${#} || ! -e ${1} ]] && printUsage || ISO="${1}"
 
 checkReq() {
 
-	ARCH=$( uname -m ) REQS=( "qemu-system-${ARCH}" )
+	ARCH=$(uname -m) REQS=("qemu-system-${ARCH}")
 
 	for REQ in "${REQS[@]}"; do
-		if ! command -v "${REQ}">/dev/null;then
+		if ! command -v "${REQ}" >/dev/null; then
 			echo -e "To run me, you need:${WARN}${REQ}${RC}"
 			exit 1
 		fi
@@ -25,8 +24,11 @@ checkReq() {
 
 }
 
-checkFailed() {	echo -ne "${WARN}[FAILED]${RC}\n"; exit 1; }
-checkPassed() {	echo -ne "${GOOD}[OK]${RC}\n"; }
+checkFailed() {
+	echo -ne "${WARN}[FAILED]${RC}\n"
+	exit 1
+}
+checkPassed() { echo -ne "${GOOD}[OK]${RC}\n"; }
 
 echo -ne "Verifying system requirements...${RC}"
 if checkReq; then
@@ -36,14 +38,14 @@ else
 fi
 
 echo -ne "Checking CPU virtualization capability...${RC}"
-if grep -Ewo 'vmx|svm' /proc/cpuinfo>/dev/null; then
+if grep -Ewo 'vmx|svm' /proc/cpuinfo >/dev/null; then
 	checkPassed
 else
 	checkFailed
 fi
 
 echo -ne "Computing available RAM...${RC}"
-if AVAIL_MEM=$(( $(grep -i MemAvail /proc/meminfo | awk '{print $2}') / 1024 )); then
+if AVAIL_MEM=$(($(grep -i MemAvail /proc/meminfo | awk '{print $2}') / 1024)); then
 	checkPassed
 else
 	checkFailed

@@ -1,7 +1,7 @@
 #!/bin/bash
 ## Get the current Google search trends in a specific country.
 
-getTrend(){
+getTrend() {
 
 	#google_trends_country=$( grep 'LANG=' /etc/locale.conf | cut -d '=' -f 2 | cut -d "_" -f 2 | cut -d "." -f 1 )
 
@@ -9,9 +9,9 @@ getTrend(){
 
 	google_trends_url="https://trends.google.com/trends/trendingsearches/daily/rss?geo=${google_trends_country}"
 
-	mapfile -t google_trends_results < <( curl -s "${google_trends_url}" | grep -oP '(?<=<title>).*(?=</title>)' | tail -n +2 )
+	mapfile -t google_trends_results < <(curl -s "${google_trends_url}" | grep -oP '(?<=<title>).*(?=</title>)' | tail -n +2)
 
-	if [[ ! "${google_trends_results[*]}" ]]; then
+	if [[ ! ${google_trends_results[*]} ]]; then
 
 		echo -e "Can not get the latest trends!"
 		exit 1
@@ -20,8 +20,7 @@ getTrend(){
 
 }
 
-printTrend(){
-
+printTrend() {
 
 	N=0
 
@@ -36,14 +35,12 @@ printTrend(){
 
 }
 
-main(){
-
+main() {
 
 	getTrend
 	printTrend
 
 }
-
 
 DATE=$(date '+%A %d %B %Y')
 echo "Google trends for ${DATE}:"

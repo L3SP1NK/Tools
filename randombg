@@ -1,10 +1,10 @@
 #!/bin/bash
 set -euo pipefail
 
-findBackground(){
+findBackground() {
 
 	IMG_TYPE='.svg|.png|.jpg|.jpeg'
-#	IMG_PATH='/usr/share/backgrounds/gnome'
+	#	IMG_PATH='/usr/share/backgrounds/gnome'
 	IMG_PATH="${HOME}/Pictures/backgrounds/"
 
 	RANDOM_BG=$(
@@ -16,15 +16,14 @@ findBackground(){
 
 }
 
+setBackground() {
 
-setBackground(){
-
-#	feh --no-xinerama --bg-fill "${RANDOM_BG}" ## span accross multiple screens
+	#	feh --no-xinerama --bg-fill "${RANDOM_BG}" ## span
 	feh --bg-fill "${RANDOM_BG}"
 
 }
 
-main(){
+main() {
 	findBackground
 	setBackground
 }

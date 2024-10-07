@@ -10,15 +10,15 @@ checkRoot() {
 
 }
 
-setFreq(){
+setFreq() {
 
-	ncpu=$(( $(nproc) - 1 ))
+	ncpu=$(($(nproc) - 1))
 	dmenu_cmd='rofi -dmenu'
 
-	gov_banned=( 'placeholder' )
-	gov_available=( $(cpupower frequency-info | grep "available cpufreq"|sort -u|cut -d ":" -f 2) )
-	gov_emojis=( $(cpupower frequency-info -g ) )
-	gov_selected=$( printf '%s\n' "${gov_available[@]}" | $dmenu_cmd -p 'select governor:')
+	gov_banned=('placeholder')
+	gov_available=($(cpupower frequency-info | grep "available cpufreq" | sort -u | cut -d ":" -f 2))
+	gov_emojis=($(cpupower frequency-info -g))
+	gov_selected=$(printf '%s\n' "${gov_available[@]}" | $dmenu_cmd -p 'select governor:')
 
 	[[ -z $gov_selected ]] && exit 1
 
@@ -31,7 +31,7 @@ setFreq(){
 	fi
 }
 
-main(){
+main() {
 
 	if ! checkRoot; then
 		exit 1

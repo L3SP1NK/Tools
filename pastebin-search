@@ -4,10 +4,9 @@
 ## <Google dorks URL> + <keyword>
 REQUEST="https://www.google.com/search?q=site:'pastebin.com'%20intext:'${1}'"
 
-if [[ ${1} ]]
-	then
-		x-www-browser "${REQUEST}" 2>/dev/null&
-		echo -e "Searching for ${1}..."
-	else
-		echo -e "Please, enter a term to search on Pastebin (e.g. 'cars')."
+if [[ ${1} ]]; then
+	x-www-browser "${REQUEST}" 2>/dev/null &
+	echo -e "Searching for ${1}..."
+else
+	echo -e "Please, enter a term to search on Pastebin (e.g. 'cars')."
 fi

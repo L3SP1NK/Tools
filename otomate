@@ -8,9 +8,8 @@ bold='\e[1m'
 ul='\e[4m'
 rc='\e[0m'
 
-
 showBanner() {
-echo -e "$bc
+	echo -e "$bc
 
 
 			   d8P									 d8P
@@ -27,10 +26,10 @@ echo -e "$bc
 checkRequirements() {
 
 	crawler='waybackurls'
-	requirements=( "$crawler" 'subfinder' 'sqlmap' 'curl' 'wpscan' 'nuclei' )
+	requirements=("$crawler" 'subfinder' 'sqlmap' 'curl' 'wpscan' 'nuclei')
 
 	for requirement in "${requirements[@]}"; do
-		if ! command -v "$requirement" > /dev/null; then
+		if ! command -v "$requirement" >/dev/null; then
 			echo -e "\n$warn ! ${rc}${rc}$requirement not found!$rc"
 			exit 1
 		fi
@@ -51,7 +50,7 @@ checkIsUp() {
 
 wpscanUrl() {
 
-	url=$( echo "$url" | cut -d '/' -f 3 | sort -u )
+	url=$(echo "$url" | cut -d '/' -f 3 | sort -u)
 	echo -e "\n$ok + $rc$ul$bold$url$rc seems to run wordpress, running wpscan...$rc"
 
 	wpscan_cmd='wpscan --random-user-agent -e vp, vt, cd, dbe, u, m --stealthy --ignore-main-redirect'
@@ -68,15 +67,14 @@ sqlmapUrl() {
 	echo -e "\n$info → ${rc}Searching for SQLi on $ul$bold$url$rc...$rc"
 
 	$sqlmap_cmd
-#	$sqlmap_cmd --forms
+	#	$sqlmap_cmd --forms
 
 }
-
 
 searchSubdomain() {
 
 	echo -e "\n$info → ${rc}Searching for subdomain on $ul$bold$target$rc...$rc"
-	found_subdomains=( $( subfinder -d "$target" -all -silent ) )
+	found_subdomains=($(subfinder -d "$target" -all -silent))
 
 	if [ -z "$found_subdomains" ]; then
 		echo -e "\n$warn ! ${rc}${rc}No subdomain found on $ul$bold$target$rc!$rc"
@@ -90,13 +88,12 @@ searchSubdomain() {
 
 }
 
-
 searchUrl() {
 
 	echo -e "\n$info → ${rc}Searching for URL on $ul$bold$subdomain$rc...$rc"
-#	found_urls=( $( katana -aff -jc -kf -fx -retry 3 -u "$subdomain" -silent ) )
-#	found_urls=( $( $crawler $subdomain ))
-	found_urls=( $( $crawler $subdomain | sort -u ))
+	#	found_urls=( $( katana -aff -jc -kf -fx -retry 3 -u "$subdomain" -silent ) )
+	#	found_urls=( $( $crawler $subdomain ))
+	found_urls=($($crawler $subdomain | sort -u))
 
 	if [ -z "$found_urls" ]; then
 		echo -e "\n$warn ! ${rc}${rc}No URL found on $ul$bold$subdomain$rc!$rc"
@@ -119,21 +116,20 @@ testTarget() {
 
 		for url in "${found_urls[@]}"; do
 
-			if echo "$url" | grep '/wp-' 1>/dev/null; then wpscanUrl ; fi
+			if echo "$url" | grep '/wp-' 1>/dev/null; then wpscanUrl; fi
 
-			if echo -e "\n$url" | grep -aE '=|\?' 1>/dev/null ; then sqlmapUrl; fi
+			if echo -e "\n$url" | grep -aE '=|\?' 1>/dev/null; then sqlmapUrl; fi
 
 		done
 
 	done
 }
 
-
 main() {
 
 	checkRequirements
 
-	targets=( "$@" )
+	targets=("$@")
 
 	if [ -z $targets ]; then
 
@@ -141,7 +137,6 @@ main() {
 		exit 1
 
 	fi
-
 
 	for target in "${targets[@]}"; do
 
@@ -154,4 +149,4 @@ main() {
 
 }
 
-showBanner&&main "$@"
+showBanner && main "$@"

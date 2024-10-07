@@ -17,20 +17,19 @@ while read -r line; do
 			displays[$display]=$resolution
 		fi
 	fi
-done <<< "$xrandr_output"
+done <<<"$xrandr_output"
 
 # Determine which display the mouse is on
 for display in "${!displays[@]}"; do
 	# Extract resolution and position
-	IFS='+' read -r res pos_x pos_y <<< "${displays[$display]}"
-	IFS='x' read -r width height <<< "$res"
+	IFS='+' read -r res pos_x pos_y <<<"${displays[$display]}"
+	IFS='x' read -r width height <<<"$res"
 
 	# Check if mouse is within the bounds of this display
-	if (( X >= pos_x && X < pos_x + width && Y >= pos_y && Y < pos_y + height )); then
+	if ((X >= pos_x && X < pos_x + width && Y >= pos_y && Y < pos_y + height)); then
 		cursor_pos=$display
 	fi
 done
-
 
 # Get the current xrandr output
 xrandr_output=$(xrandr)
@@ -41,8 +40,8 @@ calculate_scale_factor() {
 	local native_res=$2
 
 	# Split resolution into width and height
-	IFS='x' read -r current_width current_height <<< "$current_res"
-	IFS='x' read -r native_width native_height <<< "$native_res"
+	IFS='x' read -r current_width current_height <<<"$current_res"
+	IFS='x' read -r native_width native_height <<<"$native_res"
 
 	# Calculate scale factors
 	scale_x=$(echo "scale=2; $current_width / $native_width" | bc)
@@ -51,7 +50,7 @@ calculate_scale_factor() {
 	echo "$scale_x x $scale_y"
 }
 
-parse_xrandr_output(){
+parse_xrandr_output() {
 	while read -r line; do
 		if [[ $line == *" connected "* ]]; then
 			# Extract display name
@@ -76,38 +75,36 @@ parse_xrandr_output(){
 
 		fi
 
-	done <<< "$xrandr_output"
+	done <<<"$xrandr_output"
 }
 
 cur_display=$cursor_pos
-cur_display_scaling=$(parse_xrandr_output|grep "$cur_display" | cut -d " " -f 2)
+cur_display_scaling=$(parse_xrandr_output | grep "$cur_display" | cut -d " " -f 2)
 
-set_scale(){
+set_scale() {
 
 	xrandr --output "$cur_display" --scale "$new_scale"
 	notify-send "$cur_display scale: x0$new_scale"
 
 }
 
-increase_scale(){
+increase_scale() {
 
 	new_scale=$(echo "$cur_display_scaling + 0.1" | bc -l)
 	set_scale
 
 }
 
-decrease_scale(){
+decrease_scale() {
 
 	new_scale=$(echo "$cur_display_scaling - 0.1" | bc -l)
 	set_scale
 
 }
 
-
 if [[ ${1} == '+' ]]; then
 
 	decrease_scale ## zoom in
-
 
 elif [[ ${1} == '-' ]]; then
 
@@ -118,4 +115,3 @@ else
 	echo "$cur_display_scaling"
 
 fi
-

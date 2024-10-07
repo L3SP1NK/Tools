@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if ! command -v jgmenu>/dev/null;then
+if ! command -v jgmenu >/dev/null; then
 	exit 1
 fi
 
@@ -11,8 +11,8 @@ if [[ -n $jgpid ]]; then
 fi
 
 lockfile="${HOME}/.jgmenu-lockfile"
-if [ -e "${lockfile}" ];then
+if [ -e "${lockfile}" ]; then
 	rm "${lockfile}"
 fi
 
-jgmenu -simple --at-pointer&
+jgmenu -simple --at-pointer &

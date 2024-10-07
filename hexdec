@@ -15,7 +15,7 @@ for HEX_STRING in "${HEX_STRINGS[@]}"; do
 
 	fi
 
-	DECIMAL_VALUE=$( printf "%s" $((16#${HEX_STRING})) )
+	DECIMAL_VALUE=$(printf "%s" $((16#${HEX_STRING})))
 	echo -n "${DECIMAL_VALUE} "
 
 done

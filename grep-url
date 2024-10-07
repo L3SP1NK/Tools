@@ -4,9 +4,9 @@
 #REGEX='^(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
 REGEX='[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
 
-if [[ -n "${@}" ]]; then
+if [[ -n ${@} ]]; then
 
-	INPUT=( "${@}" )
+	INPUT=("${@}")
 
 	for FILE in ${INPUT[@]}; do
 		if [ ! -e $FILE ]; then

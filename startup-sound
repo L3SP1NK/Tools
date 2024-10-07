@@ -3,7 +3,6 @@
 # Path to the sound file
 SOUND_FILE="/home/$USER/.sounds/startup.mp3"
 
-
 [[ ! -e $SOUND_FILE ]] && exit 1
 
 PLAYER='mpv'

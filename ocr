@@ -1,37 +1,40 @@
 #!/bin/bash
 # Optical Character Recognition.
 
-[[ -z ${XAUTHORITY} ]] && { echo "Can't find X display to contact!"; exit 1; }
+[[ -z ${XAUTHORITY} ]] && {
+	echo "Can't find X display to contact!"
+	exit 1
+}
 
-REQUIREMENTS=( 'tesseract' 'xfce4-screenshooter' 'xclip' 'notify-send' )
+REQUIREMENTS=('tesseract' 'xfce4-screenshooter' 'xclip' 'notify-send')
 
 for REQ in "${REQUIREMENTS[@]}"; do
-  if ! command -v "${REQ}" >/dev/null 2>&1; then
-	echo "${REQ} not found!"
-	exit 1
-  fi
+	if ! command -v "${REQ}" >/dev/null 2>&1; then
+		echo "${REQ} not found!"
+		exit 1
+	fi
 done
 
 COMPOSITOR='picom'
 COMPOSITOR_PID=$(pidof "${COMPOSITOR}")
 
-if [[ -n "${COMPOSITOR_PID}" ]]; then
-  echo "Killing compositor to prevent blur during screenshot..."
-  kill "${COMPOSITOR_PID}"
-  COMPOSITOR_WAS_RUNNING='0'
+if [[ -n ${COMPOSITOR_PID} ]]; then
+	echo "Killing compositor to prevent blur during screenshot..."
+	kill "${COMPOSITOR_PID}"
+	COMPOSITOR_WAS_RUNNING='0'
 fi
 
 SCREENSHOT_OUTFILE="/tmp/screenshot_${RANDOM}"
 xfce4-screenshooter -r -s "${SCREENSHOT_OUTFILE}"
 
-[[ "${COMPOSITOR_WAS_RUNNING}" -eq '0' ]] && "${COMPOSITOR}" &
-[[ ! -e "${SCREENSHOT_OUTFILE}" ]] && exit 1
+[[ ${COMPOSITOR_WAS_RUNNING} -eq '0' ]] && "${COMPOSITOR}" &
+[[ ! -e ${SCREENSHOT_OUTFILE} ]] && exit 1
 
 OCR_OUTPUT="/tmp/ocr_${RANDOM}"
 tesseract "${SCREENSHOT_OUTFILE}" "${OCR_OUTPUT}" || exit 1
 
 OCR_TEXT=$(<"${OCR_OUTPUT}.txt")
-[[ -z "${OCR_TEXT}" ]] && exit 1
+[[ -z ${OCR_TEXT} ]] && exit 1
 
 APPNAME="${0}"
 notify-send -a "${APPNAME}" "${OCR_TEXT}$(echo -e '\n\n📋 String copied to clipboard!')"

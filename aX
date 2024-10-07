@@ -2,21 +2,20 @@
 
 ## After Boot
 
-checkReq(){
+checkReq() {
 
-	REQS=('modprobe' 'lsmod' 'swapon' 'mkswap' 'zramctl' )
+	REQS=('modprobe' 'lsmod' 'swapon' 'mkswap' 'zramctl')
 
 	for REQ in ${REQS[@]}; do
-		if ! command -v $REQ>/dev/null; then
+		if ! command -v $REQ >/dev/null; then
 			echo "$REQ not installed on this system!"
 			exit 1
 		fi
 	done
 
-
 }
 
-checkPriv(){
+checkPriv() {
 
 	if [[ $EUID -ne '0' ]]; then
 		echo 'Run me as root!'
@@ -25,7 +24,7 @@ checkPriv(){
 
 }
 
-zramOn(){
+zramOn() {
 
 	ZRAM_SIZE='4G'
 	ZRAM_FILE='/dev/zram0'
@@ -39,7 +38,7 @@ zramOn(){
 		modprobe zram
 	fi
 
-	mkSwap(){
+	mkSwap() {
 		zramctl $ZRAM_FILE --algorithm zstd --size $ZRAM_SIZE
 		mkswap -U clear $ZRAM_FILE
 		swapon --priority 100 $ZRAM_FILE
@@ -48,9 +47,9 @@ zramOn(){
 	mkSwap 1>/dev/null
 }
 
-reniceProc(){
+reniceProc() {
 
-	procs=( 'pipewire-pulse' 'wireplumber' 'pasystray' 'pulseaudio' )
+	procs=('pipewire-pulse' 'wireplumber' 'pasystray' 'pulseaudio')
 
 	for proc in "${procs[@]}"; do
 		if pidof $proc 1>/dev/null; then
@@ -60,14 +59,13 @@ reniceProc(){
 		fi
 	done
 
-
 }
 
-enableNouveau(){
+enableNouveau() {
 
-	if ! lsmod|grep ^nouveau 1>/dev/null; then
+	if ! lsmod | grep ^nouveau 1>/dev/null; then
 		modprobe nouveau
-		if pidof Xorg>/dev/null; then
+		if pidof Xorg >/dev/null; then
 			echo 'Close everything and press: [enter]'
 			read && killall Xorg
 		else
@@ -81,7 +79,7 @@ enableNouveau(){
 
 }
 
-main(){
+main() {
 
 	checkPriv
 	zramOn

@@ -7,18 +7,18 @@ RED='\e[31m' RC='\e[0m'
 BROWSER='x-www-browser' BROWSER_CMD="${BROWSER}"
 DMENU='rofi' DMENU_CMD='rofi -dmenu'
 
-REQUIREMENTS=( "${BROWSER}" "${DMENU}" )
+REQUIREMENTS=("${BROWSER}" "${DMENU}")
 
 for REQUIREMENT in "${REQUIREMENTS[@]}"; do
-	if ! command -v "${REQUIREMENT}">/dev/null; then
+	if ! command -v "${REQUIREMENT}" >/dev/null; then
 		echo -e "${RED}To run me, you need: ${REQUIREMENT}${RC}"
 		exit 1
 	fi
 done
 
-SEARCH_QUERY="$( ${DMENU_CMD} -p '🔎 Search: ' )"
+SEARCH_QUERY="$(${DMENU_CMD} -p '🔎 Search: ')"
 [[ -z ${SEARCH_QUERY} ]] && exit 1
 
 SEARCH_ENGINE='google' SEARCH_URL="https://www.${SEARCH_ENGINE}.com/search?q=${SEARCH_QUERY}"
 
-${BROWSER_CMD} "${SEARCH_URL}"&
+${BROWSER_CMD} "${SEARCH_URL}" &

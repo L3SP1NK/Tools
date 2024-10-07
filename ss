@@ -1,18 +1,17 @@
 #!/bin/bash
 
 setScreenSaver() {
-	while true
-		do
-			clear
+	while true; do
+		clear
 
-			screensaver=$(find /usr/libexec/xscreensaver/|shuf|head -n1)
-			coproc "${screensaver}" --root
+		screensaver=$(find /usr/libexec/xscreensaver/ | shuf | head -n1)
+		coproc "${screensaver}" --root
 
-			echo -e "${screensaver}\npress [enter] to view another screensaver"
-			read
+		echo -e "${screensaver}\npress [enter] to view another screensaver"
+		read
 
-			kill "$(pidof ${screensaver})"
-			setScreenSaver
+		kill "$(pidof ${screensaver})"
+		setScreenSaver
 
 	done
 

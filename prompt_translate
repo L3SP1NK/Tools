@@ -9,16 +9,18 @@ trans_input=$(${dmenu_cmd} -p "To translate: ")
 text_fr_to_en='auto → 🇬🇧 English'
 text_en_to_fr='auto → 🇫🇷 Français'
 
-lang_select=$(echo -e "${text_en_to_fr}\n${text_fr_to_en}"|${dmenu_cmd} -p 'Translate to:')
+lang_select=$(echo -e "${text_en_to_fr}\n${text_fr_to_en}" | ${dmenu_cmd} -p 'Translate to:')
 
-if [[ "${lang_select}" == "${text_en_to_fr}" ]]; then
+if [[ ${lang_select} == "${text_en_to_fr}" ]]; then
 	lang_out='fr'
-elif [[ "${lang_select}" == "${text_fr_to_en}" ]]; then
+elif [[ ${lang_select} == "${text_fr_to_en}" ]]; then
 	lang_out='en'
 else
 	echo 'Unknown language!'
 fi
 
-
-trans_response=$(echo "${trans_input}" | trans -b -t "${lang_out}" || { notify-send -a "${appname}" -e 'No response!'; exit 1; })
+trans_response=$(echo "${trans_input}" | trans -b -t "${lang_out}" || {
+	notify-send -a "${appname}" -e 'No response!'
+	exit 1
+})
 notify-send -a "${appname}" "${trans_response}"

@@ -4,4 +4,4 @@
 set -EpeTuxob
 
 echo test
-command -v error&
+command -v error &
