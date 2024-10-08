@@ -7,7 +7,7 @@ ZRAM_FILE='/dev/zram0'
 
 REQUIREMENTS=('modprobe' 'lsmod' 'swapon' 'mkswap' 'zramctl')
 
-for REQUIREMENT in ${REQUIREMENTS[@]}; do
+for REQUIREMENT in "${REQUIREMENTS[@]}"; do
 	if ! command -v $REQUIREMENT >/dev/null; then
 		echo "$REQUIREMENT not installed on this system!"
 		exit 1
