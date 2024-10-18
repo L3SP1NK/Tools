@@ -4,7 +4,7 @@
 checkRoot() {
 
 	if [[ ${EUID} -ne '0' ]]; then
-		echo 'Root privileges needed to change governor!'
+		echo 'Root privileges are needed to change governor!'
 		exit 1
 	fi
 
