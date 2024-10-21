@@ -1,0 +1,29 @@
+#!/bin/bash
+base_path="$HOME"
+sdk_path="$base_path/Android/Sdk"
+emulator='$sdk_path/emulator'
+mem_available=$(( $(grep -i MemAvail /proc/meminfo | awk '{print $2}') / 100 ))
+ram=$mem_available
+core=$(nproc)
+
+
+coproc emulator @$($emulator -list-avds)\
+	-verbose\
+	-allow-host-audio\
+	-restart-when-stalled\
+	-no-metrics\
+	-detect-image-hang\
+	-skip-adb-auth\
+	-metrics-to-console\
+	-use-host-vulkan\
+	-no-boot-anim\
+	-accel on\
+	-cores $core\
+	-memory $ram\
+	-fixed-scale\
+	-no-mouse-reposition\
+	-no-location-ui\
+	-no-cache\
+	-no-snapshot-save\
+	-no-snapstorage\
+	-nocache
