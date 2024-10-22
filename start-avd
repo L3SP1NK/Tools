@@ -1,29 +1,41 @@
 #!/bin/bash
-base_path="$HOME"
-sdk_path="$base_path/Android/Sdk"
-emulator='$sdk_path/emulator'
-mem_available=$(( $(grep -i MemAvail /proc/meminfo | awk '{print $2}') / 100 ))
+set -euo pipefail
+
+base_path=$HOME
+sdk_path=$base_path/Android/Sdk
+emulator=$sdk_path/emulator/emulator
+mem_available=$(( $(grep -i MemAvail /proc/meminfo | awk '{print $2}') / 1024 ))
 ram=$mem_available
 core=$(nproc)
+avd=$($emulator -list-avds|head -n 1)
 
 
-coproc emulator @$($emulator -list-avds)\
-	-verbose\
-	-allow-host-audio\
-	-restart-when-stalled\
-	-no-metrics\
-	-detect-image-hang\
-	-skip-adb-auth\
-	-metrics-to-console\
-	-use-host-vulkan\
-	-no-boot-anim\
-	-accel on\
-	-cores $core\
-	-memory $ram\
-	-fixed-scale\
-	-no-mouse-reposition\
-	-no-location-ui\
-	-no-cache\
-	-no-snapshot-save\
-	-no-snapstorage\
-	-nocache
+startAvd(){
+	$emulator @$avd\
+		-verbose\
+		-allow-host-audio\
+		-restart-when-stalled\
+		-no-metrics\
+		-detect-image-hang\
+		-skip-adb-auth\
+		-metrics-to-console\
+		-use-host-vulkan\
+		-no-boot-anim\
+		-accel on\
+		-cores $core\
+		-memory $ram\
+		-fixed-scale\
+		-no-mouse-reposition\
+		-no-location-ui\
+		-no-cache\
+		-no-snapshot-save\
+		-no-snapstorage\
+		-nocache&
+}
+
+if startAvd; then
+	notify-send "Starting $avd AVD..."
+else
+	echo 'Someting went wrong!'
+	exit 1
+fi
