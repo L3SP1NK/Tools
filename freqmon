@@ -1,7 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-declare -gri floating_point=3
+declare -gri oc_max_freq='4199000'	## Overclocked max frequency 
+declare -gri floating_point='3'
 
 setGovernorIcon() {
 	case $scaling_governor in
@@ -20,13 +21,12 @@ showDriverGovernor() {
 	declare -gr cpu_base_path="/sys/devices/system/cpu"
 	declare -r cpu_device_path="$cpu_base_path/cpu0/cpufreq"
 
-	read -r scaling_max_freq <$cpu_device_path/scaling_max_freq
 	read -r scaling_governor <$cpu_device_path/scaling_governor
 	read -r scaling_driver <$cpu_device_path/scaling_driver
 
-	#	setGovernorIcon
-	#	echo -e " \e[4m$scaling_driver:\e[0m \e[1m$scaling_governor$scaling_governor_icon\e[0m\n"
-	echo -e " \e[4m$scaling_driver:\e[0m \e[1m$scaling_governor\e[0m\n"
+	setGovernorIcon
+
+	echo -e " \e[4m$scaling_driver:\e[0m \e[1m$scaling_governor$scaling_governor_icon\e[0m\n"
 }
 
 setRatioColorIcon() {
@@ -72,14 +72,18 @@ showCpuFreq() {
 		local cpu_device_path
 		cpu_device_path="$cpu_base_path/cpu$core/cpufreq"
 		read -r scaling_cur_freq <$cpu_device_path/scaling_cur_freq
-		read -r scaling_max_freq <$cpu_device_path/scaling_max_freq
+
+		if [[ -n $oc_max_freq ]]; then
+			scaling_max_freq=$oc_max_freq
+		else
+			read -r scaling_max_freq <$cpu_device_path/scaling_max_freq
+		fi
 
 		local freq_ghz
 		freq_ghz=$(bc <<<"scale=$floating_point; $scaling_cur_freq / 1000000")
 		local scaling_ratio
 		scaling_ratio=$(bc <<<"scale=$floating_point; $scaling_cur_freq / $scaling_max_freq")
 
-		# Add leading 0 if <1
 		[[ ${scaling_ratio:0:1} == '.' ]] && scaling_ratio="0$scaling_ratio"
 
 		local scaled_ratio
@@ -92,7 +96,7 @@ showCpuFreq() {
 		local _core
 		_core=$((core + 1))
 
-		echo -e " • core$_core: $color$freq_ghz\e[0m GHz \e[2m($scaling_ratio)\e[0m"
+		echo -e " $icon core$_core: $color$freq_ghz\e[0m GHz \e[2m($scaling_ratio)\e[0m"
 
 	done
 }
