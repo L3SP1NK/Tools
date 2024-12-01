@@ -1,0 +1,29 @@
+#!/bin/bash
+
+sensor_names=( 'power' 'k10' 'radeon' )
+
+echo -ne '\e[1m\n+--------+--------+--------+\n'
+
+for name in ${sensor_names[@]}; do
+
+	value=$(sensors|grep ${name} -A2|tac|grep '(' |awk '{print $2}')
+
+	case $name in
+
+		'power')
+			value="${value}W"
+			color='\e[7m\e[1m\e[33m';;
+
+		'radeon')
+			color='\e[7m\e[1m\e[36m';;
+
+		'k10')
+			color='\e[7m\e[1m\e[31m';;
+
+	esac
+
+	value=${value/+/}
+	echo -ne "\e[1m| \e[0m$color$value\e[0m \e[1m"
+done
+
+echo -ne '\e[1m|\n+--------+--------+--------+'
