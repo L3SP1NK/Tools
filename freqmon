@@ -1,6 +1,6 @@
 #!/bin/bash
 
-declare -gri oc_max_freq='4700000'	## Specify max freq manually (for overclocked cpu).
+declare -gri oc_max_freq='4100000'	## Specify max freq manually (for overclocked cpu).
 declare -gri floating_point='3'		## Precision (1-6).
 
 setGovernorIcon() {
@@ -107,7 +107,7 @@ main() {
 	getCoreNum
 	getDriverGovernor
 	showCpuFreq
-	echo -e " |-----------------------------|"
+	echo -e " |-------+-----------+---------|"
 }
 
 main

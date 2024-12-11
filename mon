@@ -2,7 +2,7 @@
 
 sensor_names=( 'power' 'k10' 'radeon' )
 
-echo -ne '\e[1m\n+--------+--------+--------+\n'
+echo -ne '\e[1m\n|--------+--------+--------|\n'
 
 for name in ${sensor_names[@]}; do
 
@@ -26,4 +26,4 @@ for name in ${sensor_names[@]}; do
 	echo -ne "\e[1m| \e[0m$color$value\e[0m \e[1m"
 done
 
-echo -ne '\e[1m|\n+--------+--------+--------+'
+echo -ne '\e[1m|\n|--------+--------+--------|'
