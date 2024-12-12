@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if [[ -n $1 && -e $1 ]]; then
+	file=$1
+else
+	echo 'No file submited!'
+	exit 1
+fi
+
+vuln_critical=$(grep critical $file|wc -l)
+vuln_high=$(grep high $file|wc -l)
+vuln_medium=$(grep medium $file|wc -l)
+vuln_low=$(grep low $file|wc -l)
+vuln_info=$(grep info $file|wc -l)
+
+echo -e "
+ \e[1m\e[35m$vuln_critical\tcritical\e[0m
+ \e[1m\e[31m$vuln_high\thigh\e[0m
+ \e[1m\e[33m$vuln_medium\tmedium\e[0m
+ \e[1m\e[36m$vuln_low\tlow\e[0m
+ \e[1m\e[2m$vuln_info\tinfo\e[0m
+"
