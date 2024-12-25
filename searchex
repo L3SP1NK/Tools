@@ -1,0 +1,16 @@
+#!/bin/bash
+
+search_query=${1:-$(</dev/stdin)}
+
+searchsploit "$search_query"
+
+source_link[1]="https://sploitus.com/?query=$search_query#exploits"
+source_link[2]="https://vulners.com/search?query=$search_query"
+source_link[3]="https://packetstormsecurity.com/search/?q=$search_query"
+source_link[4]="https://github.com/search?q=$search_query"
+
+echo "Searching online..."
+for query_link in "${source_link[@]}"; do
+	x-www-browser "$query_link"
+done
+
