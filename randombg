@@ -8,7 +8,7 @@ findBackground() {
 	IMG_PATH="${HOME}/Pictures/backgrounds/"
 
 	RANDOM_BG=$(
-		find -O3 -L "${IMG_PATH}" -maxdepth 1 \
+		find -O3 -L "${IMG_PATH}" -maxdepth 99 \
 			| grep -E "${IMG_TYPE}" \
 			| shuf \
 			| head -n1
