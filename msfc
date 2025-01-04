@@ -8,4 +8,4 @@
 trap '' TSTP
 #trap '' SIGINT
 
-msfconsole
+msfconsole -Lan
