@@ -86,7 +86,7 @@ showCpuFreq() {
 
 		[[ -n $oc_max_freq ]] && scaling_max_freq=$oc_max_freq
 
-		local freq_ghz; freq_ghz=$(bc <<< "scale=$floating_point; $scaling_cur_freq / 1000000")
+		local freq_ghz; freq_ghz=$(printf "%.${floating_point}f" $(bc <<< "scale=$floating_point; $scaling_cur_freq / 1000000"))
 		local scaling_ratio; scaling_ratio=$(bc <<< "scale=$floating_point; $scaling_cur_freq / $scaling_max_freq")
 
 		[[ ${scaling_ratio:0:1} == '.' ]] && { local scaling_ratio; scaling_ratio="0$scaling_ratio"; }
@@ -98,7 +98,7 @@ showCpuFreq() {
 
 		local -i _core; _core=$((core + 1))
 
-		echo -e " |-------+-----------+---------|\n | \e[4mcore$_core\e[0m | $color$freq_ghz\e[0m GHz | \e[2m($scaling_ratio)\e[0m |"
+		echo -e " +-------+-----------+---------+\n | \e[4mcore$_core\e[0m | $color$freq_ghz\e[0m GHz | \e[2m($scaling_ratio)\e[0m |"
 
 	done
 }
@@ -107,7 +107,7 @@ main() {
 	getCoreNum
 	getDriverGovernor
 	showCpuFreq
-	echo -e " |-------+-----------+---------|"
+	echo -e " +-------+-----------+---------+"
 }
 
 main
